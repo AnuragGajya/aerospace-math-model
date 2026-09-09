@@ -1,0 +1,697 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Aerospace Mathematical Dynamics & Machine Learning Platform</title>
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js" onload="if(window.renderMathInElement) renderMathInElement(document.body, {delimiters: [{left: '$$', right: '$$', display: true}, {left: '$', right: '$', display: false}]});"></script>
+</head>
+<body>
+  <!-- Header Bar -->
+  <header class="header">
+    <div class="header-inner">
+      <div class="brand">
+        <div class="brand-logo">🚀</div>
+        <div>
+          <div class="brand-title">AEROSPACE MATHEMATICAL DYNAMICS MODEL</div>
+          <div class="brand-sub">Trained Flight Telemetry &middot; Machine Learning Predictor &middot; 4 Dedicated Modules in One Unified Platform</div>
+        </div>
+      </div>
+      <div class="system-status">
+        <div class="status-indicator"></div>
+        <span class="font-mono font-bold" style="color: #34d399;">50 Hz Telemetry Active (1,740 Time Steps &middot; 1,000 ML Batch Runs)</span>
+      </div>
+    </div>
+  </header>
+
+  <main class="container">
+    <!-- Top 4 Sections Interactive Header Boxes -->
+    <div class="page-nav-grid">
+      <!-- Box 1 -->
+      <div class="page-box active" id="nav-btn-setter" onclick="switchSection('setter')">
+        <div class="box-top">
+          <span class="box-num">SECTION 1</span>
+          <span class="box-badge badge-sky" id="badge-setter">800m/s &middot; 45.0°</span>
+        </div>
+        <div class="box-title">⚙️ Values Setter</div>
+        <div class="box-desc">Configure launch speed, elevation angle, fin deploy triggers, and presets</div>
+      </div>
+
+      <!-- Box 2 -->
+      <div class="page-box" id="nav-btn-formulas" onclick="switchSection('formulas')">
+        <div class="box-top">
+          <span class="box-num">SECTION 2</span>
+          <span class="box-badge badge-emerald" id="badge-formulas">6 Live Formulas</span>
+        </div>
+        <div class="box-title">⏱️ Formulas & Calculations</div>
+        <div class="box-desc">Mathematical equations with step-by-step numerical evaluation across time</div>
+      </div>
+
+      <!-- Box 3 -->
+      <div class="page-box" id="nav-btn-graphs" onclick="switchSection('graphs')">
+        <div class="box-top">
+          <span class="box-num">SECTION 3</span>
+          <span class="box-badge badge-amber" id="badge-graphs">8 Visual Plots</span>
+        </div>
+        <div class="box-title">📈 All Equation Graphs</div>
+        <div class="box-desc">Dedicated high-contrast plots for every mathematical equation & 1,000 batch runs</div>
+      </div>
+
+      <!-- Box 4 -->
+      <div class="page-box" id="nav-btn-prediction" onclick="switchSection('prediction')">
+        <div class="box-top">
+          <span class="box-num">SECTION 4</span>
+          <span class="box-badge badge-purple" id="badge-prediction">ML Predictor</span>
+        </div>
+        <div class="box-title">🎯 Flight Prediction</div>
+        <div class="box-desc">Trained Machine Learning model predicting CEP miss distance and impact verdict</div>
+      </div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- SECTION 1: VALUES SETTER -->
+    <!-- ========================================== -->
+    <div id="section-setter" class="section-view active">
+      <div class="panel">
+        <div class="panel-header">
+          <div>
+            <div class="panel-title">
+              <span>⚙️</span> Section 1: Flight Parameters & Values Setter
+            </div>
+            <div class="panel-subtitle">
+              Tune initial launch kinematics, guidance constants, and environmental factors. Instant synchronization across all calculations and prediction models!
+            </div>
+          </div>
+          <div style="display: flex; gap: 8px;">
+            <button class="btn btn-primary" onclick="window.randomizeValues()">🎲 Randomize Values</button>
+            <button id="resetParamsBtn" class="btn">↺ Reset Nominal</button>
+          </div>
+        </div>
+
+        <!-- Quick Preset Buttons -->
+        <div class="control-box" style="margin-bottom: 20px;">
+          <div class="control-box-title">⚡ Quick Flight Mission Presets</div>
+          <div class="preset-grid">
+            <button class="btn btn-preset" onclick="window.applyPreset('nominal')">
+              🎯 <strong>Nominal Max Range</strong>
+              <span style="display:block;font-size:10px;color:var(--text-muted);margin-top:2px;">V0: 800 m/s, θ0: 45.0°, Target: 15.0 km</span>
+            </button>
+            <button class="btn btn-preset" onclick="window.applyPreset('steep')">
+              🏔️ <strong>High-Angle Steep Descent</strong>
+              <span style="display:block;font-size:10px;color:var(--text-muted);margin-top:2px;">V0: 960 m/s, θ0: 52.0°, Deploy: 1.2 km</span>
+            </button>
+            <button class="btn btn-preset" onclick="window.applyPreset('earlyDeploy')">
+              🛡️ <strong>Early Fin Deployment</strong>
+              <span style="display:block;font-size:10px;color:var(--text-muted);margin-top:2px;">V0: 800 m/s, θ0: 45.0°, Deploy: 0.8 km</span>
+            </button>
+            <button class="btn btn-preset" onclick="window.applyPreset('crosswind')">
+              💨 <strong>High Crosswind (18 m/s)</strong>
+              <span style="display:block;font-size:10px;color:var(--text-muted);margin-top:2px;">V0: 800 m/s, Wind: 18 m/s @ 90° heading</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Parameter Controls Grid -->
+        <div class="grid-2">
+          <!-- Input Group 1: Launch Kinematics -->
+          <div class="control-box">
+            <div class="control-box-title">🚀 Launch Initial Kinematics</div>
+            
+            <div class="input-group">
+              <div class="input-label-row">
+                <span class="input-label">Initial Muzzle Velocity (V₀)</span>
+                <span id="v0_display" class="input-val font-mono text-sky-400 font-bold">800 m/s (Mach 2.35)</span>
+              </div>
+              <div class="slider-row">
+                <input id="v0_slider" type="range" min="700" max="1200" step="5" value="800">
+                <input id="v0_input" class="num-input" type="number" min="700" max="1200" step="5" value="800">
+              </div>
+              <div style="font-size:10px;color:var(--text-muted);margin-top:2px;">Governs initial kinetic energy $E_k = \frac{1}{2}m V_0^2$ and supersonic entry Mach.</div>
+            </div>
+
+            <div class="input-group">
+              <div class="input-label-row">
+                <span class="input-label">Launch Elevation Angle (θ₀)</span>
+                <span id="theta0_display" class="input-val font-mono text-sky-400 font-bold">45.0°</span>
+              </div>
+              <div class="slider-row">
+                <input id="theta0_slider" type="range" min="20.0" max="65.0" step="0.1" value="45.0">
+                <input id="theta0_input" class="num-input" type="number" min="20.0" max="65.0" step="0.1" value="45.0">
+              </div>
+              <div style="font-size:10px;color:var(--text-muted);margin-top:2px;">Directly determines apogee altitude $Z_{max}$ vs downrange $X_{final}$.</div>
+            </div>
+
+            <div class="input-group">
+              <div class="input-label-row">
+                <span class="input-label">Total Launch Mass (W)</span>
+                <span id="mass_display" class="input-val font-mono text-sky-400 font-bold">12.0 kg</span>
+              </div>
+              <div class="slider-row">
+                <input id="mass_slider" type="range" min="8.0" max="25.0" step="0.5" value="12.0">
+                <input id="mass_input" class="num-input" type="number" min="8.0" max="25.0" step="0.5" value="12.0">
+              </div>
+              <div style="font-size:10px;color:var(--text-muted);margin-top:2px;">Ballistic coefficient $\beta = \frac{m}{C_D S}$. Higher mass retains momentum longer.</div>
+            </div>
+          </div>
+
+          <!-- Input Group 2: Guidance & Environment -->
+          <div class="control-box">
+            <div class="control-box-title">🎛️ Guidance & Atmospheric Environment</div>
+
+            <div class="input-group">
+              <div class="input-label-row">
+                <span class="input-label">Fin Deployment Downrange (x_deploy)</span>
+                <span id="xdeploy_display" class="input-val font-mono text-emerald-400 font-bold">1,200 m (1.2 km)</span>
+              </div>
+              <div class="slider-row">
+                <input id="xdeploy_slider" type="range" min="0" max="12000" step="100" value="1200">
+                <input id="xdeploy_input" class="num-input" type="number" min="0" max="12000" step="100" value="1200">
+              </div>
+              <div style="font-size:10px;color:var(--text-muted);margin-top:2px;">Downrange distance trigger where 4 grid fins deploy from locked STOWED state.</div>
+            </div>
+
+            <div class="input-group">
+              <div class="input-label-row">
+                <span class="input-label">Crosswind Magnitude (W_wind)</span>
+                <span id="wind_display" class="input-val font-mono text-emerald-400 font-bold">5.0 m/s</span>
+              </div>
+              <div class="slider-row">
+                <input id="wind_slider" type="range" min="0.0" max="25.0" step="0.5" value="5.0">
+                <input id="wind_input" class="num-input" type="number" min="0.0" max="25.0" step="0.5" value="5.0">
+              </div>
+              <div style="font-size:10px;color:var(--text-muted);margin-top:2px;">Lateral crosswind creates aerodynamic side-slip angle $\beta_{aero}$ and lateral drift.</div>
+            </div>
+
+            <div class="input-group">
+              <div class="input-label-row">
+                <span class="input-label">ProNav Guidance Gain (N')</span>
+                <span id="pronav_display" class="input-val font-mono text-emerald-400 font-bold">4.0 (Optimal True ProNav)</span>
+              </div>
+              <div class="slider-row">
+                <input id="pronav_slider" type="range" min="2.0" max="6.0" step="0.1" value="4.0">
+                <input id="pronav_input" class="num-input" type="number" min="2.0" max="6.0" step="0.1" value="4.0">
+              </div>
+              <div style="font-size:10px;color:var(--text-muted);margin-top:2px;">Navigation constant in $a_{cmd} = N' V_c \dot{\lambda}$. Higher gain responds faster.</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Active Summary & Actions -->
+        <div class="card" style="margin-top: 20px; background: #08101e; border: 1px solid #1e3a8a;">
+          <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
+            <div>
+              <div style="font-weight:700; color:var(--text-main); font-size:14px;">📡 Synchronized Flight Parameter State</div>
+              <div style="color:var(--text-muted); font-size:11px;">Parameters are saved into local state memory. Changing values here dynamically updates formulas, graphs, and predictions across all sections!</div>
+            </div>
+            <div style="display:flex; gap:10px;">
+              <button id="applySaveBtn" class="btn btn-success" style="font-size:13px; font-weight:700; padding:10px 20px;">
+                💾 Apply Parameters & Save
+              </button>
+              <button class="btn btn-primary" onclick="switchSection('formulas')" style="font-size:13px; font-weight:700; padding:10px 20px;">
+                Proceed to Section 2: Formulas & Calculations →
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- SECTION 2: FORMULAS & CALCULATIONS -->
+    <!-- ========================================== -->
+    <div id="section-formulas" class="section-view">
+      <div class="panel">
+        <div class="panel-header">
+          <div>
+            <div class="panel-title">
+              <span>⏱️</span> Section 2: Mathematical Formulas & Live Telemetry Calculations
+            </div>
+            <div class="panel-subtitle">
+              Scrub the timeline or click Play: every formula card calculates and displays its exact numerical output at that time step from the Excel dataset!
+            </div>
+          </div>
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <span id="formulaTimeBadge" class="factor-badge badge-sky" style="font-size: 12px; padding: 4px 12px;">
+              t = 0.02 s (Step 1 / 1740)
+            </span>
+            <button id="formulaPrevSec" class="btn" style="padding: 4px 10px; font-size: 11px;">⏮ -1s</button>
+            <button id="formulaPlayBtn" class="btn btn-success" style="padding: 4px 12px; font-size: 11px;">▶ Play Time</button>
+            <button id="formulaNextSec" class="btn" style="padding: 4px 10px; font-size: 11px;">⏭ +1s</button>
+            <button id="formulaResetBtn" class="btn" style="padding: 4px 10px; font-size: 11px;">↺ Reset</button>
+          </div>
+        </div>
+
+        <!-- Live Timeline Scrubber -->
+        <div style="display: flex; align-items: center; gap: 12px; background: #04070f; padding: 10px 14px; border-radius: 12px; border: 1px solid var(--border-color); margin-bottom: 20px;">
+          <span style="font-size: 11px; font-family: monospace; color: var(--text-muted);">0.0s (Launch)</span>
+          <input id="formulaTimeScrubber" type="range" min="0" max="1739" value="0" step="1" style="flex: 1; cursor: pointer;" />
+          <span style="font-size: 11px; font-family: monospace; color: var(--text-muted);">34.8s (Touchdown)</span>
+        </div>
+
+        <!-- 6 Dynamic Mathematical Formula Calculation Cards Grid -->
+        <div class="grid-2">
+          
+          <!-- Formula 1: Translational Kinematics -->
+          <div class="live-calc-card">
+            <div>
+              <div class="calc-header">
+                <span class="factor-badge badge-sky">1. Kinematics & Accelerations</span>
+                <span class="font-mono text-sky-400 text-xs" id="calcTime1">t = 0.02 s</span>
+              </div>
+              <div class="calc-title">Translational Equations of Motion</div>
+              <div class="formula-display">
+                $$\dot{\mathbf{r}} = \mathbf{V}, \quad m \frac{d\mathbf{V}}{dt} = \mathbf{F}_{aero} + m\mathbf{g}$$
+                $$a_x = \frac{D_x + L_x + S_x}{m}, \quad a_z = \frac{D_z + L_z - mg}{m}$$
+              </div>
+            </div>
+            
+            <div class="live-output-box">
+              <div style="font-size:10px;font-weight:700;color:#34d399;margin-bottom:4px;">⚡ Live Evaluated Values at this Instant:</div>
+              <div class="output-row"><span class="output-label">Position [X, Y, Z]:</span><span id="f1_pos" class="output-val">[17.71, -0.00, 23.02] m</span></div>
+              <div class="output-row"><span class="output-label">Velocity [Vx, Vy, Vz]:</span><span id="f1_vel" class="output-val">[884.80, -0.01, 650.54] m/s</span></div>
+              <div class="output-row"><span class="output-label">Net Acceleration a_net:</span><span id="f1_accel" class="output-val">0.00 m/s²</span></div>
+              <div class="output-row"><span class="output-label">Gravity Vector g:</span><span class="output-val">[0, 0, -9.81] m/s²</span></div>
+            </div>
+          </div>
+
+          <!-- Formula 2: Supersonic Aerodynamics & Dynamic Pressure -->
+          <div class="live-calc-card">
+            <div>
+              <div class="calc-header">
+                <span class="factor-badge badge-emerald">2. Aerothermodynamics</span>
+                <span class="font-mono text-emerald-400 text-xs" id="calcTime2">t = 0.02 s</span>
+              </div>
+              <div class="calc-title">Dynamic Pressure & Supersonic Wave Drag</div>
+              <div class="formula-display">
+                $$q = \frac{1}{2} \rho(z) V^2, \quad M = \frac{V}{a(z)}$$
+                $$C_{D,wave} = \frac{2}{\sqrt{M^2 - 1}}\left(\frac{D}{L}\right)^2, \quad F_{Drag} = q \cdot S_{ref} \cdot C_D$$
+              </div>
+            </div>
+            
+            <div class="live-output-box">
+              <div style="font-size:10px;font-weight:700;color:#34d399;margin-bottom:4px;">⚡ Live Evaluated Values at this Instant:</div>
+              <div class="output-row"><span class="output-label">Air Density ρ(Z):</span><span id="f2_rho" class="output-val">1.222 kg/m³</span></div>
+              <div class="output-row"><span class="output-label">Speed of Sound a(Z):</span><span id="f2_sos" class="output-val">340.2 m/s</span></div>
+              <div class="output-row"><span class="output-label">Mach Number (M):</span><span id="f2_mach" class="output-val">Mach 3.23 (Supersonic)</span></div>
+              <div class="output-row"><span class="output-label">Dynamic Pressure (q):</span><span id="f2_q" class="output-val">732.1 kPa</span></div>
+              <div class="output-row"><span class="output-label">Drag Coefficient (C_D):</span><span id="f2_cd" class="output-val">0.342</span></div>
+              <div class="output-row"><span class="output-label">Total Drag Force F_Drag:</span><span id="f2_fdrag" class="output-val">802.2 N</span></div>
+            </div>
+          </div>
+
+          <!-- Formula 3: Control Fin Aerodynamics -->
+          <div class="live-calc-card">
+            <div>
+              <div class="calc-header">
+                <span class="factor-badge badge-amber">3. Aerodynamic Control Surfaces</span>
+                <span class="font-mono text-amber-400 text-xs" id="calcTime3">t = 0.02 s</span>
+              </div>
+              <div class="calc-title">Fin Control Deflections & Moments</div>
+              <div class="formula-display">
+                $$M_y = q \cdot S_{ref} \cdot d \cdot \left( C_{m\alpha} \alpha + C_{m\delta} \delta_{pitch} \right)$$
+                $$\delta_{pitch} = \text{ctrl\_pitch\_deg}, \quad \delta_{yaw} = \text{ctrl\_yaw\_deg}$$
+              </div>
+            </div>
+            
+            <div class="live-output-box">
+              <div style="font-size:10px;font-weight:700;color:#34d399;margin-bottom:4px;">⚡ Live Evaluated Values at this Instant:</div>
+              <div class="output-row"><span class="output-label">Trajectory Elevation Angle:</span><span id="f3_aoa" class="output-val">36.32°</span></div>
+              <div class="output-row"><span class="output-label">Cross-Track Azimuth Angle:</span><span id="f3_sideslip" class="output-val">-0.001°</span></div>
+              <div class="output-row"><span class="output-label">Fin Deflections:</span><span id="f3_fins" class="output-val">Pitch: 0.00°, Yaw: 0.00°</span></div>
+              <div class="output-row"><span class="output-label">Aerodynamic Pitch Moment:</span><span id="f3_moment" class="output-val">0.00 N·m</span></div>
+              <div class="output-row"><span class="output-label">Fin Mechanical State:</span><span id="f3_fin_status" class="output-val">STOWED</span></div>
+            </div>
+          </div>
+
+          <!-- Formula 4: Guidance Commands -->
+          <div class="live-calc-card">
+            <div>
+              <div class="calc-header">
+                <span class="factor-badge badge-purple">4. Guidance Law Commands</span>
+                <span class="font-mono text-purple-400 text-xs" id="calcTime4">t = 0.02 s</span>
+              </div>
+              <div class="calc-title">Guidance Acceleration Demands (pitch_accel_cmd)</div>
+              <div class="formula-display">
+                $$a_{cmd} = N' \cdot V_c \cdot \dot{\lambda}, \quad \dot{\lambda} = \frac{R_x V_z - R_z V_x}{R^2}$$
+                $$a_{pitch\_cmd} \in [-45.0, +45.0]\text{ m/s}^2$$
+              </div>
+            </div>
+            
+            <div class="live-output-box">
+              <div style="font-size:10px;font-weight:700;color:#34d399;margin-bottom:4px;">⚡ Live Evaluated Values at this Instant:</div>
+              <div class="output-row"><span class="output-label">Distance to Target (15km):</span><span id="f4_range" class="output-val">14,982.3 m</span></div>
+              <div class="output-row"><span class="output-label">Closing Velocity (Vc):</span><span id="f4_vc" class="output-val">884.8 m/s</span></div>
+              <div class="output-row"><span class="output-label">Line-of-Sight Rate (λ̇):</span><span id="f4_los_rate" class="output-val">-0.00004 rad/s</span></div>
+              <div class="output-row"><span class="output-label">Guidance Gain (N'):</span><span id="f4_gain" class="output-val">4.00</span></div>
+              <div class="output-row"><span class="output-label">Commanded Accel (a_cmd):</span><span id="f4_acmd" class="output-val">0.00 m/s² (Pitch Cmd)</span></div>
+            </div>
+          </div>
+
+          <!-- Formula 5: Extended Kalman Filter Navigation -->
+          <div class="live-calc-card">
+            <div>
+              <div class="calc-header">
+                <span class="factor-badge badge-sky">5. Kalman Filter Navigation</span>
+                <span class="font-mono text-sky-400 text-xs" id="calcTime5">t = 0.02 s</span>
+              </div>
+              <div class="calc-title">EKF State Estimation [est_x, est_y, est_z]</div>
+              <div class="formula-display">
+                $$\hat{\mathbf{x}}_{k|k-1} = f(\hat{\mathbf{x}}_{k-1}, \mathbf{u}_{k-1}), \quad \mathbf{K}_k = \mathbf{P}_{k|k-1} \mathbf{H}_k^T (\mathbf{H}_k \mathbf{P}_{k|k-1} \mathbf{H}_k^T + \mathbf{R}_k)^{-1}$$
+                $$\hat{\mathbf{x}}_k = \hat{\mathbf{x}}_{k|k-1} + \mathbf{K}_k (\mathbf{z}_k - h(\hat{\mathbf{x}}_{k|k-1}))$$
+              </div>
+            </div>
+            
+            <div class="live-output-box">
+              <div style="font-size:10px;font-weight:700;color:#34d399;margin-bottom:4px;">⚡ Live Evaluated Values at this Instant:</div>
+              <div class="output-row"><span class="output-label">True Position [X, Z]:</span><span id="f5_true_pos" class="output-val">[17.71, 23.02] m</span></div>
+              <div class="output-row"><span class="output-label">EKF Estimated Pos [X̂, Ẑ]:</span><span id="f5_est_pos" class="output-val">[20.34, 23.53] m</span></div>
+              <div class="output-row"><span class="output-label">State Error ‖r - r̂‖:</span><span id="f5_residual" class="output-val">2.68 m (Initializing)</span></div>
+              <div class="output-row"><span class="output-label">Filter Status:</span><span id="f5_cov" class="output-val">0.0024 m² (High Confidence)</span></div>
+            </div>
+          </div>
+
+          <!-- Formula 6: Flight Phase & Actuator Health -->
+          <div class="live-calc-card">
+            <div>
+              <div class="calc-header">
+                <span class="factor-badge badge-rose">6. Mission Sequencing</span>
+                <span class="font-mono text-rose-400 text-xs" id="calcTime6">t = 0.02 s</span>
+              </div>
+              <div class="calc-title">Flight Phase & Fin Actuation State</div>
+              <div class="formula-display">
+                $$\text{State} \in \{\text{STOWED}, \text{DEPLOYING}, \text{STABILIZATION ACTIVE}\}$$
+              </div>
+            </div>
+            
+            <div class="live-output-box">
+              <div style="font-size:10px;font-weight:700;color:#34d399;margin-bottom:4px;">⚡ Live Evaluated Values at this Instant:</div>
+              <div class="output-row"><span class="output-label">Current Flight Phase:</span><span id="f6_phase" class="output-val" style="color:#38bdf8;font-weight:700;">Phase 1: Boost & Supersonic Climb</span></div>
+              <div class="output-row"><span class="output-label">Deployment Status:</span><span id="f6_deploy_rem" class="output-val">1182.3 m to trigger</span></div>
+              <div class="output-row"><span class="output-label">Actuator Bus Voltage:</span><span id="f6_volt" class="output-val">28.00 V</span></div>
+              <div class="output-row"><span class="output-label">Thermal Load:</span><span id="f6_temp" class="output-val">24.0 °C (Nominal)</span></div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Section Navigation CTA -->
+        <div class="card" style="margin-top: 20px; background: #08101e; border: 1px solid #1e3a8a; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
+          <button class="btn" onclick="switchSection('setter')">← Back to Section 1: Values Setter</button>
+          <button class="btn btn-primary" onclick="switchSection('graphs')" style="font-size:13px; font-weight:700; padding:10px 20px;">
+            Proceed to Section 3: All Equation Graphs →
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- SECTION 3: ALL EQUATION GRAPHS -->
+    <!-- ========================================== -->
+    <div id="section-graphs" class="section-view">
+      <div class="panel">
+        <div class="panel-header">
+          <div>
+            <div class="panel-title">
+              <span>📈</span> Section 3: Dedicated Graphs for Every Flight Equation
+            </div>
+            <div class="panel-subtitle">
+              8 standalone, high-contrast visual plots representing every mathematical formula in the aerodynamic trajectory model and 1,000 batch simulation runs.
+            </div>
+          </div>
+          <div style="display:flex; align-items:center; gap:8px;">
+            <span class="factor-badge badge-emerald">8 Live Vector Canvases</span>
+            <button class="btn" onclick="window.drawAllGraphs()">🔄 Redraw Graphs</button>
+          </div>
+        </div>
+
+        <!-- 8 Equation Graphs Grid -->
+        <div class="graph-grid">
+
+          <!-- Graph 1: Trajectory Profile Z(X) -->
+          <div class="graph-card">
+            <div class="graph-header">
+              <div>
+                <div class="graph-title">1. Altitude Profile Z(X) vs Downrange Distance</div>
+                <div class="graph-eq">$$Z(X) = X \tan \theta_0 - \frac{g X^2}{2 V_0^2 \cos^2 \theta_0} + \Delta Z_{aero}, \quad Z_{max} = 3,273.7\text{ m}$$</div>
+              </div>
+              <span class="factor-badge badge-sky">Trajectory</span>
+            </div>
+            <div class="canvas-container">
+              <canvas id="canvas_trajectory" class="graph-canvas"></canvas>
+            </div>
+          </div>
+
+          <!-- Graph 2: Velocity V(t) & Mach M(t) -->
+          <div class="graph-card">
+            <div class="graph-header">
+              <div>
+                <div class="graph-title">2. Speed V(t) & Supersonic Mach Number M(t)</div>
+                <div class="graph-eq">$$V(t) = \sqrt{V_x^2 + V_y^2 + V_z^2}, \quad M(t) = \frac{V(t)}{a(Z(t))}$$</div>
+              </div>
+              <span class="factor-badge badge-emerald">Kinematics</span>
+            </div>
+            <div class="canvas-container">
+              <canvas id="canvas_velocity" class="graph-canvas"></canvas>
+            </div>
+          </div>
+
+          <!-- Graph 3: Dynamic Pressure q(t) & Drag Force FD(t) -->
+          <div class="graph-card">
+            <div class="graph-header">
+              <div>
+                <div class="graph-title">3. Dynamic Pressure q(t) & Aerodynamic Drag F_D(t)</div>
+                <div class="graph-eq">$$q(t) = \frac{1}{2} \rho(Z) V^2, \quad F_D(t) = q(t) \cdot S_{ref} \cdot C_D(M)$$</div>
+              </div>
+              <span class="factor-badge badge-amber">Aerodynamics</span>
+            </div>
+            <div class="canvas-container">
+              <canvas id="canvas_aerodynamics" class="graph-canvas"></canvas>
+            </div>
+          </div>
+
+          <!-- Graph 4: Control Deflections ctrl_pitch_deg, ctrl_yaw_deg -->
+          <div class="graph-card">
+            <div class="graph-header">
+              <div>
+                <div class="graph-title">4. Body Pitch & Yaw Control Deflection Angles</div>
+                <div class="graph-eq">$$\delta_q(t) = \text{ctrl\_pitch\_deg}, \quad \delta_r(t) = \text{ctrl\_yaw\_deg}$$</div>
+              </div>
+              <span class="factor-badge badge-purple">Control Angles</span>
+            </div>
+            <div class="canvas-container">
+              <canvas id="canvas_accelerations" class="graph-canvas"></canvas>
+            </div>
+          </div>
+
+          <!-- Graph 5: Commanded Acceleration pitch_accel_cmd -->
+          <div class="graph-card">
+            <div class="graph-header">
+              <div>
+                <div class="graph-title">5. Guidance Commanded Normal Acceleration (pitch_accel_cmd)</div>
+                <div class="graph-eq">$$a_{pitch\_cmd} = \text{clamp}(N' V_c \dot{\lambda}, -45.0, +45.0)\text{ m/s}^2$$</div>
+              </div>
+              <span class="factor-badge badge-rose">Guidance</span>
+            </div>
+            <div class="canvas-container">
+              <canvas id="canvas_pronav" class="graph-canvas"></canvas>
+            </div>
+          </div>
+
+          <!-- Graph 6: 4-Fin Independent Control Deflections -->
+          <div class="graph-card">
+            <div class="graph-header">
+              <div>
+                <div class="graph-title">6. Independent Fin Deflections & Fin State Transitions</div>
+                <div class="graph-eq">$$\text{Fin State} \in \{\text{STOWED (0-1s)}, \text{DEPLOYING (1-1.5s)}, \text{ACTIVE (1.5-34.8s)}\}$$</div>
+              </div>
+              <span class="factor-badge badge-sky">Actuators</span>
+            </div>
+            <div class="canvas-container">
+              <canvas id="canvas_fins" class="graph-canvas"></canvas>
+            </div>
+          </div>
+
+          <!-- Graph 7: EKF State Estimation Error -->
+          <div class="graph-card">
+            <div class="graph-header">
+              <div>
+                <div class="graph-title">7. Extended Kalman Filter (EKF) State Error ‖r - r̂‖</div>
+                <div class="graph-eq">$$\|\mathbf{e}_k\| = \sqrt{(X - \hat{X})^2 + (Y - \hat{Y})^2 + (Z - \hat{Z})^2} < 0.5\text{ m}$$</div>
+              </div>
+              <span class="factor-badge badge-emerald">Navigation</span>
+            </div>
+            <div class="canvas-container">
+              <canvas id="canvas_ekf" class="graph-canvas"></canvas>
+            </div>
+          </div>
+
+          <!-- Graph 8: Monte Carlo Impact Dispersion Scatter -->
+          <div class="graph-card">
+            <div class="graph-header">
+              <div>
+                <div class="graph-title">8. Monte Carlo Simulation Dispersion Scatter (1,000 Runs)</div>
+                <div class="graph-eq">$$\text{CEP}_{30m} \text{ Tactical Threshold}, \quad R_{miss} = \text{final\_error}$$</div>
+              </div>
+              <span class="factor-badge badge-amber">1,000 Runs</span>
+            </div>
+            <div class="canvas-container">
+              <canvas id="canvas_dispersion" class="graph-canvas"></canvas>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Section Navigation CTA -->
+        <div class="card" style="margin-top: 20px; background: #08101e; border: 1px solid #1e3a8a; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
+          <button class="btn" onclick="switchSection('formulas')">← Back to Section 2: Formulas & Calculations</button>
+          <button class="btn btn-primary" onclick="switchSection('prediction')" style="font-size:13px; font-weight:700; padding:10px 20px;">
+            Proceed to Section 4: Flight Prediction →
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- SECTION 4: FLIGHT PREDICTION -->
+    <!-- ========================================== -->
+    <div id="section-prediction" class="section-view">
+      <div class="panel">
+        <div class="panel-header">
+          <div>
+            <div class="panel-title">
+              <span>🎯</span> Section 4: ML & Mathematical Flight Outcome Prediction
+            </div>
+            <div class="panel-subtitle">
+              Trained Machine Learning Model (Polynomial Ridge Regression over 1,000 Excel simulation records) predicting future flight outcomes for any given parameters.
+            </div>
+          </div>
+          <div style="display: flex; gap: 8px;">
+            <button class="btn btn-primary" onclick="window.randomizeValues()">🎲 Random Values & Predict</button>
+            <button class="btn btn-success" onclick="window.print()">🖨️ Export Mission Summary</button>
+          </div>
+        </div>
+
+        <!-- Mission Verdict Card -->
+        <div id="verdictCard" class="card" style="margin-bottom: 20px; border-left: 6px solid #10b981; background: #071510;">
+          <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
+            <div>
+              <div style="font-size:11px; text-transform:uppercase; letter-spacing:1px; color:#34d399; font-weight:700;">PREDICTED MISSION OUTCOME (TRAINED ML MODEL)</div>
+              <div id="verdictTitle" style="font-size:22px; font-weight:800; color:#f8fafc; margin-top:4px;">TARGET HIT (PASS) &middot; PRECISION ACCURACY</div>
+              <div id="verdictDesc" style="font-size:12px; color:var(--text-secondary); margin-top:4px;">
+                Guided trajectory with active 4-fin stabilization corrects for aerodynamic drag and lateral crosswind, achieving sub-30m accuracy (nominal: 27.78m) on the 15,000m target.
+              </div>
+            </div>
+            <div id="verdictBadge" class="factor-badge badge-emerald" style="font-size:14px; padding:8px 18px; font-weight:800;">
+              100% MISSION SUCCESS (PASS)
+            </div>
+          </div>
+        </div>
+
+        <!-- 4 Core Metric Cards -->
+        <div class="grid-4" style="margin-bottom: 20px;">
+          <div class="metric-card">
+            <div class="metric-label">Predicted Miss Distance (final_error)</div>
+            <div id="pred_cep" class="metric-val" style="color:#34d399;">27.78 m</div>
+            <div class="metric-sub">Tactical Threshold: &le; 30.0 m</div>
+          </div>
+
+          <div class="metric-card">
+            <div class="metric-label">Predicted Apogee Altitude (Z_max)</div>
+            <div id="pred_apogee" class="metric-val" style="color:#38bdf8;">3,273.7 m</div>
+            <div class="metric-sub">Time to Apogee: 13.08 s</div>
+          </div>
+
+          <div class="metric-card">
+            <div class="metric-label">Total Downrange Distance (X_final)</div>
+            <div id="pred_range" class="metric-val" style="color:#f59e0b;">14,972.2 m</div>
+            <div class="metric-sub">Target Coords: (15000.0, 0.0)</div>
+          </div>
+
+          <div class="metric-card">
+            <div class="metric-label">Total Time of Flight (duration)</div>
+            <div id="pred_tof" class="metric-val" style="color:#a855f7;">34.80 s</div>
+            <div class="metric-sub">Touchdown Speed: 248.3 m/s</div>
+          </div>
+        </div>
+
+        <!-- Chronological Flight Story Breakdown -->
+        <div class="card" style="margin-bottom: 20px;">
+          <div style="font-size:15px; font-weight:700; color:var(--text-main); margin-bottom:14px;">
+            📖 Chronological Trajectory Story & Flight Phase Log (Excel Telemetry Ground Truth)
+          </div>
+
+          <div style="display:flex; flex-direction:column; gap:12px;">
+            
+            <!-- Phase 1 -->
+            <div style="background:#04070f; border-left:4px solid #0284c7; padding:12px 16px; border-radius:8px;">
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+                <span style="font-weight:700; color:#38bdf8; font-size:13px;">Phase 1: Boost & Supersonic Climb (0.00s – 1.00s) &middot; STOWED</span>
+                <span class="font-mono" style="font-size:11px; color:var(--text-muted);">t = 0.00s to 1.00s</span>
+              </div>
+              <div style="font-size:12px; color:var(--text-secondary); line-height:1.6;">
+                Vehicle launches at $V_0 = 800\text{ m/s}$ (Mach 2.35) at $\theta_0 = 45.0^\circ$. Fins remain mechanically STOWED ($\text{ctrl\_pitch\_deg} = 0.0^\circ$, $\text{ctrl\_yaw\_deg} = 0.0^\circ$). Initial dynamic pressure $q = 732\text{ kPa}$ produces maximum wave drag.
+              </div>
+            </div>
+
+            <!-- Phase 2 -->
+            <div style="background:#04070f; border-left:4px solid #f59e0b; padding:12px 16px; border-radius:8px;">
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+                <span style="font-weight:700; color:#fbbf24; font-size:13px;">Phase 2: Fin Deployment Transition (1.02s – 1.50s) &middot; DEPLOYING</span>
+                <span class="font-mono" style="font-size:11px; color:var(--text-muted);">X &ge; 871m to 1,261m</span>
+              </div>
+              <div style="font-size:12px; color:var(--text-secondary); line-height:1.6;">
+                At $t = 1.02\text{s}$, the fin deployment trigger activates. Actuators unlock the 4 grid control surfaces from stowed fairing recesses. The system verifies electrical bus continuity ($28.0\text{V}$) and prepares for active stabilization.
+              </div>
+            </div>
+
+            <!-- Phase 3 -->
+            <div style="background:#04070f; border-left:4px solid #10b981; padding:12px 16px; border-radius:8px;">
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+                <span style="font-weight:700; color:#34d399; font-size:13px;">Phase 3: Active Guided Deceleration & Apogee Peak (1.52s – 33.00s) &middot; STABILIZATION ACTIVE</span>
+                <span class="font-mono" style="font-size:11px; color:var(--text-muted);">Apogee: t = 13.08s (3,273.7m)</span>
+              </div>
+              <div style="font-size:12px; color:var(--text-secondary); line-height:1.6;">
+                Fins engage with pitch command $a_{pitch\_cmd} = -45.0\text{ m/s}^2$ and pitch deflection up to $-19.0^\circ$. The vehicle climbs to peak apogee $Z_{max} = 3,273.7\text{ m}$ at $t = 13.08\text{s}$, seamlessly transitions over the crest, and begins guided supersonic-to-subsonic descent.
+              </div>
+            </div>
+
+            <!-- Phase 4 -->
+            <div style="background:#04070f; border-left:4px solid #a855f7; padding:12px 16px; border-radius:8px;">
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+                <span style="font-weight:700; color:#c084fc; font-size:13px;">Phase 4: Terminal Intercept & Impact (33.00s – 34.80s)</span>
+                <span class="font-mono" style="font-size:11px; color:var(--text-muted);">Touchdown: t = 34.80s at X = 14,972.2m</span>
+              </div>
+              <div style="font-size:12px; color:var(--text-secondary); line-height:1.6;">
+                Extended Kalman Filter tracks the terminal intercept with sub-meter innovation error ($0.12\text{m}$). The projectile hits ground level ($Z = 0.0\text{m}$) at downrange $X = 14,972.2\text{m}$, yielding a precise miss distance of $27.78\text{m}$ from the $15,000\text{m}$ target—scoring a validated mission PASS.
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- Navigation Actions -->
+        <div class="card" style="background: #08101e; border: 1px solid #1e3a8a; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
+          <button class="btn" onclick="switchSection('graphs')">← Back to Section 3: All Equation Graphs</button>
+          <button class="btn btn-primary" onclick="switchSection('setter')" style="font-size:13px; font-weight:700; padding:10px 20px;">
+            🔄 Modify Parameters in Section 1
+          </button>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <footer style="border-top: 1px solid var(--border-color); padding: 20px; text-align: center; color: var(--text-muted); font-size: 11px; margin-top: 40px;">
+    Aerospace Mathematical Trajectory & Guidance System &middot; Synchronized State Engine &middot; Clean 4-Section Unified Architecture
+  </footer>
+
+  <!-- Core Scripts -->
+  <script src="data/flightTelemetry.js"></script>
+  <script src="data/batchSimRecords.js"></script>
+  <script src="js/math/trained_weights.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

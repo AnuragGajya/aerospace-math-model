@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>2. Formulas & Calculations | Aerospace Math Platform</title>
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js" onload="if(window.renderMathInElement) renderMathInElement(document.body, {delimiters: [{left: '$$', right: '$$', display: true}, {left: '$', right: '$', display: false}]});"></script>
+</head>
+<body>
+  <!-- Header Bar -->
+  <header class="header">
+    <div class="header-inner">
+      <div class="brand">
+        <div class="brand-logo">🚀</div>
+        <div>
+          <div class="brand-title">AEROSPACE MATHEMATICAL DYNAMICS MODEL</div>
+          <div class="brand-sub">Trained Flight Telemetry &middot; Machine Learning Predictor &middot; 4 Dedicated Modules</div>
+        </div>
+      </div>
+      <div class="system-status">
+        <div class="status-indicator status-live"></div>
+        <span class="font-mono text-emerald-400 font-bold">50 Hz Telemetry Sync Active (1,740 Points &middot; 1,000 Batch Runs)</span>
+      </div>
+    </div>
+  </header>
+
+  <main class="container">
+    <!-- Top 4 Sections Navigation Boxes -->
+    <div class="top-nav-grid">
+      <a href="index.html" class="page-box">
+        <div class="page-box-num">1</div>
+        <div class="page-box-content">
+          <div class="page-box-title">Values Setter</div>
+          <div class="page-box-desc">Configure & tune flight parameters, initial conditions, presets</div>
+        </div>
+        <span class="page-box-tag tag-muted">Parameters</span>
+      </a>
+
+      <a href="formulas.html" class="page-box active">
+        <div class="page-box-num">2</div>
+        <div class="page-box-content">
+          <div class="page-box-title">Formulas & Calculations</div>
+          <div class="page-box-desc">All mathematical equations with live telemetry numerical evaluation</div>
+        </div>
+        <span class="page-box-tag tag-sky">Active (Live Math)</span>
+      </a>
+
+      <a href="graphs.html" class="page-box">
+        <div class="page-box-num">3</div>
+        <div class="page-box-content">
+          <div class="page-box-title">All Equation Graphs</div>
+          <div class="page-box-desc">8 dedicated high-contrast visual plots of every flight dynamics law</div>
+        </div>
+        <span class="page-box-tag tag-muted">8 Visual Plots</span>
+      </a>
+
+      <a href="prediction.html" class="page-box">
+        <div class="page-box-num">4</div>
+        <div class="page-box-content">
+          <div class="page-box-title">Flight Prediction</div>
+          <div class="page-box-desc">ML/Physics trajectory outcome, CEP miss distance, impact verdict</div>
+        </div>
+        <span class="page-box-tag tag-muted">Impact Verdict</span>
+      </a>
+    </div>
+
+    <!-- Panel 2: Formulas & Live Calculations -->
+    <div class="panel">
+      <div class="panel-header">
+        <div>
+          <div class="panel-title">
+            <span>⏱️</span> Page 2: Mathematical Formulas & Live Telemetry Calculations
+          </div>
+          <div class="panel-subtitle">
+            Scrub the timeline or click Play: every formula card calculates and displays its exact numerical output at that time step!
+          </div>
+        </div>
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <span id="formulaTimeBadge" class="factor-badge badge-sky" style="font-size: 12px; padding: 4px 12px;">
+            t = 0.02 s (Step 1 / 1740)
+          </span>
+          <button id="formulaPrevSec" class="btn" style="padding: 4px 10px; font-size: 11px;">⏮ -1s</button>
+          <button id="formulaPlayBtn" class="btn btn-success" style="padding: 4px 12px; font-size: 11px;">▶ Play Time</button>
+          <button id="formulaNextSec" class="btn" style="padding: 4px 10px; font-size: 11px;">⏭ +1s</button>
+          <button id="formulaResetBtn" class="btn" style="padding: 4px 10px; font-size: 11px;">↺ Reset</button>
+        </div>
+      </div>
+
+      <!-- Live Timeline Scrubber -->
+      <div style="display: flex; align-items: center; gap: 12px; background: #04070f; padding: 10px 14px; border-radius: 12px; border: 1px solid var(--border-color); margin-bottom: 20px;">
+        <span style="font-size: 11px; font-family: monospace; color: var(--text-muted);">0.0s (Launch)</span>
+        <input id="formulaTimeScrubber" type="range" min="0" max="1739" value="0" step="1" style="flex: 1; cursor: pointer;" />
+        <span style="font-size: 11px; font-family: monospace; color: var(--text-muted);">34.8s (Touchdown)</span>
+      </div>
+
+      <!-- 6 Dynamic Mathematical Formula Calculation Cards Grid -->
+      <div class="grid-2">
+        
+        <!-- Formula 1: Translational Kinematics -->
+        <div class="live-calc-card">
+          <div>
+            <div class="calc-header">
+              <span class="factor-badge badge-sky">1. Kinematics & Accelerations</span>
+              <span class="font-mono text-sky-400 text-xs" id="calcTime1">t = 0.02 s</span>
+            </div>
+            <div class="calc-title">Translational Equations of Motion</div>
+            <div class="formula-display">
+              $$\dot{\mathbf{r}} = \mathbf{V}, \quad m \frac{d\mathbf{V}}{dt} = \mathbf{F}_{aero} + m\mathbf{g}$$
+              $$a_x = \frac{D_x + L_x + S_x}{m}, \quad a_z = \frac{D_z + L_z - mg}{m}$$
+            </div>
+          </div>
+          
+          <div class="live-output-box">
+            <div style="font-size:10px;font-weight:700;color:#34d399;margin-bottom:4px;">⚡ Live Evaluated Values at this Instant:</div>
+            <div class="output-row"><span class="output-label">Position [X, Y, Z]:</span><span id="f1_pos" class="output-val">[17.71, -0.00, 23.02] m</span></div>
+            <div class="output-row"><span class="output-label">Velocity [Vx, Vy, Vz]:</span><span id="f1_vel" class="output-val">[884.80, -0.01, 650.54] m/s</span></div>
+            <div class="output-row"><span class="output-label">Net Acceleration a_net:</span><span id="f1_accel" class="output-val">0.00 m/s²</span></div>
+            <div class="output-row"><span class="output-label">Gravity Vector g:</span><span class="output-val">[0, 0, -9.81] m/s²</span></div>
+          </div>
+        </div>
+
+        <!-- Formula 2: Supersonic Aerodynamics & Dynamic Pressure -->
+        <div class="live-calc-card">
+          <div>
+            <div class="calc-header">
+              <span class="factor-badge badge-emerald">2. Aerothermodynamics</span>
+              <span class="font-mono text-emerald-400 text-xs" id="calcTime2">t = 0.02 s</span>
+            </div>
+            <div class="calc-title">Dynamic Pressure & Supersonic Wave Drag</div>
+            <div class="formula-display">
+              $$q = \frac{1}{2} \rho(z) V^2, \quad M = \frac{V}{a(z)}$$
+              $$C_{D,wave} = \frac{2}{\sqrt{M^2 - 1}}\left(\frac{D}{L}\right)^2, \quad F_{Drag} = q \cdot S_{ref} \cdot C_D$$
+            </div>
+          </div>
+          
+          <div class="live-output-box">
+            <div style="font-size:10px;font-weight:700;color:#34d399;margin-bottom:4px;">⚡ Live Evaluated Values at this Instant:</div>
+            <div class="output-row"><span class="output-label">Air Density ρ(Z):</span><span id="f2_rho" class="output-val">1.222 kg/m³</span></div>
+            <div class="output-row"><span class="output-label">Speed of Sound a(Z):</span><span id="f2_sos" class="output-val">340.2 m/s</span></div>
+            <div class="output-row"><span class="output-label">Mach Number (M):</span><span id="f2_mach" class="output-val">Mach 3.23 (Supersonic)</span></div>
+            <div class="output-row"><span class="output-label">Dynamic Pressure (q):</span><span id="f2_q" class="output-val">732.1 kPa</span></div>
+            <div class="output-row"><span class="output-label">Drag Coefficient (C_D):</span><span id="f2_cd" class="output-val">0.342</span></div>
+            <div class="output-row"><span class="output-label">Total Drag Force F_Drag:</span><span id="f2_fdrag" class="output-val">802.2 N</span></div>
+          </div>
+        </div>
+
+        <!-- Formula 3: Control Fin Aerodynamics -->
+        <div class="live-calc-card">
+          <div>
+            <div class="calc-header">
+              <span class="factor-badge badge-amber">3. Aerodynamic Control Surfaces</span>
+              <span class="font-mono text-amber-400 text-xs" id="calcTime3">t = 0.02 s</span>
+            </div>
+            <div class="calc-title">Fin Control Deflections & Moments</div>
+            <div class="formula-display">
+              $$M_y = q \cdot S_{ref} \cdot d \cdot \left( C_{m\alpha} \alpha + C_{m\delta} \delta_{pitch} \right)$$
+              $$\delta_{pitch} = \text{ctrl\_pitch\_deg}, \quad \delta_{yaw} = \text{ctrl\_yaw\_deg}$$
+            </div>
+          </div>
+          
+          <div class="live-output-box">
+            <div style="font-size:10px;font-weight:700;color:#34d399;margin-bottom:4px;">⚡ Live Evaluated Values at this Instant:</div>
+            <div class="output-row"><span class="output-label">Trajectory Elevation Angle:</span><span id="f3_aoa" class="output-val">36.32°</span></div>
+            <div class="output-row"><span class="output-label">Cross-Track Azimuth Angle:</span><span id="f3_sideslip" class="output-val">-0.001°</span></div>
+            <div class="output-row"><span class="output-label">Fin Deflections:</span><span id="f3_fins" class="output-val">Pitch: 0.00°, Yaw: 0.00°</span></div>
+            <div class="output-row"><span class="output-label">Aerodynamic Pitch Moment:</span><span id="f3_moment" class="output-val">0.00 N·m</span></div>
+            <div class="output-row"><span class="output-label">Fin Mechanical State:</span><span id="f3_fin_status" class="output-val">STOWED</span></div>
+          </div>
+        </div>
+
+        <!-- Formula 4: Guidance Commands -->
+        <div class="live-calc-card">
+          <div>
+            <div class="calc-header">
+              <span class="factor-badge badge-purple">4. Guidance Law Commands</span>
+              <span class="font-mono text-purple-400 text-xs" id="calcTime4">t = 0.02 s</span>
+            </div>
+            <div class="calc-title">Guidance Acceleration Demands (pitch_accel_cmd)</div>
+            <div class="formula-display">
+              $$a_{cmd} = N' \cdot V_c \cdot \dot{\lambda}, \quad \dot{\lambda} = \frac{R_x V_z - R_z V_x}{R^2}$$
+              $$a_{pitch\_cmd} \in [-45.0, +45.0]\text{ m/s}^2$$
+            </div>
+          </div>
+          
+          <div class="live-output-box">
+            <div style="font-size:10px;font-weight:700;color:#34d399;margin-bottom:4px;">⚡ Live Evaluated Values at this Instant:</div>
+            <div class="output-row"><span class="output-label">Distance to Target (15km):</span><span id="f4_range" class="output-val">14,982.3 m</span></div>
+            <div class="output-row"><span class="output-label">Closing Velocity (Vc):</span><span id="f4_vc" class="output-val">884.8 m/s</span></div>
+            <div class="output-row"><span class="output-label">Line-of-Sight Rate (λ̇):</span><span id="f4_los_rate" class="output-val">-0.00004 rad/s</span></div>
+            <div class="output-row"><span class="output-label">Guidance Gain (N'):</span><span id="f4_gain" class="output-val">4.00</span></div>
+            <div class="output-row"><span class="output-label">Commanded Accel (a_cmd):</span><span id="f4_acmd" class="output-val">0.00 m/s² (Pitch Cmd)</span></div>
+          </div>
+        </div>
+
+        <!-- Formula 5: Extended Kalman Filter Navigation -->
+        <div class="live-calc-card">
+          <div>
+            <div class="calc-header">
+              <span class="factor-badge badge-sky">5. Kalman Filter Navigation</span>
+              <span class="font-mono text-sky-400 text-xs" id="calcTime5">t = 0.02 s</span>
+            </div>
+            <div class="calc-title">EKF State Estimation [est_x, est_y, est_z]</div>
+            <div class="formula-display">
+              $$\hat{\mathbf{x}}_{k|k-1} = f(\hat{\mathbf{x}}_{k-1}, \mathbf{u}_{k-1}), \quad \mathbf{K}_k = \mathbf{P}_{k|k-1} \mathbf{H}_k^T (\mathbf{H}_k \mathbf{P}_{k|k-1} \mathbf{H}_k^T + \mathbf{R}_k)^{-1}$$
+              $$\hat{\mathbf{x}}_k = \hat{\mathbf{x}}_{k|k-1} + \mathbf{K}_k (\mathbf{z}_k - h(\hat{\mathbf{x}}_{k|k-1}))$$
+            </div>
+          </div>
+          
+          <div class="live-output-box">
+            <div style="font-size:10px;font-weight:700;color:#34d399;margin-bottom:4px;">⚡ Live Evaluated Values at this Instant:</div>
+            <div class="output-row"><span class="output-label">True Position [X, Z]:</span><span id="f5_true_pos" class="output-val">[17.71, 23.02] m</span></div>
+            <div class="output-row"><span class="output-label">EKF Estimated Pos [X̂, Ẑ]:</span><span id="f5_est_pos" class="output-val">[20.34, 23.53] m</span></div>
+            <div class="output-row"><span class="output-label">State Error ‖r - r̂‖:</span><span id="f5_residual" class="output-val">2.68 m (Initializing)</span></div>
+            <div class="output-row"><span class="output-label">Filter Status:</span><span id="f5_cov" class="output-val">0.0024 m² (High Confidence)</span></div>
+          </div>
+        </div>
+
+        <!-- Formula 6: Flight Phase & Actuator Health -->
+        <div class="live-calc-card">
+          <div>
+            <div class="calc-header">
+              <span class="factor-badge badge-rose">6. Mission Sequencing</span>
+              <span class="font-mono text-rose-400 text-xs" id="calcTime6">t = 0.02 s</span>
+            </div>
+            <div class="calc-title">Flight Phase & Fin Actuation State</div>
+            <div class="formula-display">
+              $$\text{State} \in \{\text{STOWED}, \text{DEPLOYING}, \text{STABILIZATION ACTIVE}\}$$
+            </div>
+          </div>
+          
+          <div class="live-output-box">
+            <div style="font-size:10px;font-weight:700;color:#34d399;margin-bottom:4px;">⚡ Live Evaluated Values at this Instant:</div>
+            <div class="output-row"><span class="output-label">Current Flight Phase:</span><span id="f6_phase" class="output-val" style="color:#38bdf8;font-weight:700;">Phase 1: Boost & Supersonic Climb</span></div>
+            <div class="output-row"><span class="output-label">Deployment Status:</span><span id="f6_deploy_rem" class="output-val">1182.3 m to trigger</span></div>
+            <div class="output-row"><span class="output-label">Actuator Bus Voltage:</span><span id="f6_volt" class="output-val">28.00 V</span></div>
+            <div class="output-row"><span class="output-label">Thermal Load:</span><span id="f6_temp" class="output-val">24.0 °C (Nominal)</span></div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Bottom Next Step CTA -->
+      <div class="card" style="margin-top: 20px; background: #08101e; border: 1px solid #1e3a8a; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
+        <a href="index.html" class="btn" style="text-decoration:none;">← Back to Step 1: Values Setter</a>
+        <a href="graphs.html" class="btn btn-primary" style="font-size:13px; font-weight:700; padding:10px 20px; text-decoration:none;">
+          Proceed to Step 3: All Equation Graphs →
+        </a>
+      </div>
+    </div>
+  </main>
+
+  <footer style="border-top: 1px solid var(--border-color); padding: 20px; text-align: center; color: var(--text-muted); font-size: 11px; margin-top: 40px;">
+    Aerospace Mathematical Trajectory & Guidance System &middot; Synchronized State Engine &middot; Clean 4-Module Multi-Page Architecture
+  </footer>
+
+  <!-- Core Scripts -->
+  <script src="data/flightTelemetry.js"></script>
+  <script src="data/batchSimRecords.js"></script>
+  <script src="js/math/trained_weights.js"></script>
+  <script src="js/flightState.js"></script>
+  <script src="js/page_formulas.js"></script>
+</body>
+</html>

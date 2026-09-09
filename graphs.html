@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>3. All Equation Graphs | Aerospace Math Platform</title>
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js" onload="if(window.renderMathInElement) renderMathInElement(document.body, {delimiters: [{left: '$$', right: '$$', display: true}, {left: '$', right: '$', display: false}]});"></script>
+</head>
+<body>
+  <!-- Header Bar -->
+  <header class="header">
+    <div class="header-inner">
+      <div class="brand">
+        <div class="brand-logo">🚀</div>
+        <div>
+          <div class="brand-title">AEROSPACE MATHEMATICAL DYNAMICS MODEL</div>
+          <div class="brand-sub">Trained Flight Telemetry &middot; Machine Learning Predictor &middot; 4 Dedicated Modules</div>
+        </div>
+      </div>
+      <div class="system-status">
+        <div class="status-indicator status-live"></div>
+        <span class="font-mono text-emerald-400 font-bold">50 Hz Telemetry Sync Active (1,740 Points &middot; 1,000 Batch Runs)</span>
+      </div>
+    </div>
+  </header>
+
+  <main class="container">
+    <!-- Top 4 Sections Navigation Boxes -->
+    <div class="top-nav-grid">
+      <a href="index.html" class="page-box">
+        <div class="page-box-num">1</div>
+        <div class="page-box-content">
+          <div class="page-box-title">Values Setter</div>
+          <div class="page-box-desc">Configure & tune flight parameters, initial conditions, presets</div>
+        </div>
+        <span class="page-box-tag tag-muted">Parameters</span>
+      </a>
+
+      <a href="formulas.html" class="page-box">
+        <div class="page-box-num">2</div>
+        <div class="page-box-content">
+          <div class="page-box-title">Formulas & Calculations</div>
+          <div class="page-box-desc">All mathematical equations with live telemetry numerical evaluation</div>
+        </div>
+        <span class="page-box-tag tag-muted">6 Live Formulas</span>
+      </a>
+
+      <a href="graphs.html" class="page-box active">
+        <div class="page-box-num">3</div>
+        <div class="page-box-content">
+          <div class="page-box-title">All Equation Graphs</div>
+          <div class="page-box-desc">8 dedicated high-contrast visual plots of every flight dynamics law</div>
+        </div>
+        <span class="page-box-tag tag-sky">Active (8 Dedicated Plots)</span>
+      </a>
+
+      <a href="prediction.html" class="page-box">
+        <div class="page-box-num">4</div>
+        <div class="page-box-content">
+          <div class="page-box-title">Flight Prediction</div>
+          <div class="page-box-desc">ML/Physics trajectory outcome, CEP miss distance, impact verdict</div>
+        </div>
+        <span class="page-box-tag tag-muted">Impact Verdict</span>
+      </a>
+    </div>
+
+    <!-- Panel 3: All Equation Graphs -->
+    <div class="panel">
+      <div class="panel-header">
+        <div>
+          <div class="panel-title">
+            <span>📈</span> Page 3: Dedicated Graphs for Every Flight Equation
+          </div>
+          <div class="panel-subtitle">
+            8 standalone, high-contrast visual plots representing every mathematical formula in the aerodynamic trajectory model.
+          </div>
+        </div>
+        <div style="display:flex; align-items:center; gap:8px;">
+          <span class="factor-badge badge-emerald">8 Live Vector Canvases</span>
+          <button id="refreshGraphsBtn" class="btn" onclick="window.drawAllGraphs()">🔄 Redraw Graphs</button>
+        </div>
+      </div>
+
+      <!-- 8 Equation Graphs Grid -->
+      <div class="graph-grid">
+
+        <!-- Graph 1: Trajectory Profile Z(X) -->
+        <div class="graph-card">
+          <div class="graph-header">
+            <div>
+              <div class="graph-title">1. Altitude Profile Z(X) vs Downrange Distance</div>
+              <div class="graph-eq">$$Z(X) = X \tan \theta_0 - \frac{g X^2}{2 V_0^2 \cos^2 \theta_0} + \Delta Z_{aero}, \quad Z_{max} = 3,273.7\text{ m}$$</div>
+            </div>
+            <span class="factor-badge badge-sky">Trajectory</span>
+          </div>
+          <div class="canvas-container">
+            <canvas id="canvas_trajectory" class="graph-canvas"></canvas>
+            <div id="tooltip_canvas_trajectory" class="graph-tooltip"></div>
+          </div>
+        </div>
+
+        <!-- Graph 2: Velocity V(t) & Mach M(t) -->
+        <div class="graph-card">
+          <div class="graph-header">
+            <div>
+              <div class="graph-title">2. Speed V(t) & Supersonic Mach Number M(t)</div>
+              <div class="graph-eq">$$V(t) = \sqrt{V_x^2 + V_y^2 + V_z^2}, \quad M(t) = \frac{V(t)}{a(Z(t))}$$</div>
+            </div>
+            <span class="factor-badge badge-emerald">Kinematics</span>
+          </div>
+          <div class="canvas-container">
+            <canvas id="canvas_velocity" class="graph-canvas"></canvas>
+            <div id="tooltip_canvas_velocity" class="graph-tooltip"></div>
+          </div>
+        </div>
+
+        <!-- Graph 3: Dynamic Pressure q(t) & Drag Force FD(t) -->
+        <div class="graph-card">
+          <div class="graph-header">
+            <div>
+              <div class="graph-title">3. Dynamic Pressure q(t) & Aerodynamic Drag F_D(t)</div>
+              <div class="graph-eq">$$q(t) = \frac{1}{2} \rho(Z) V^2, \quad F_D(t) = q(t) \cdot S_{ref} \cdot C_D(M)$$</div>
+            </div>
+            <span class="factor-badge badge-amber">Aerodynamics</span>
+          </div>
+          <div class="canvas-container">
+            <canvas id="canvas_aerodynamics" class="graph-canvas"></canvas>
+            <div id="tooltip_canvas_aerodynamics" class="graph-tooltip"></div>
+          </div>
+        </div>
+
+        <!-- Graph 4: Control Deflections ctrl_pitch_deg, ctrl_yaw_deg -->
+        <div class="graph-card">
+          <div class="graph-header">
+            <div>
+              <div class="graph-title">4. Body Pitch & Yaw Control Deflection Angles</div>
+              <div class="graph-eq">$$\delta_q(t) = \text{ctrl\_pitch\_deg}, \quad \delta_r(t) = \text{ctrl\_yaw\_deg}$$</div>
+            </div>
+            <span class="factor-badge badge-purple">Control Angles</span>
+          </div>
+          <div class="canvas-container">
+            <canvas id="canvas_accelerations" class="graph-canvas"></canvas>
+            <div id="tooltip_canvas_accelerations" class="graph-tooltip"></div>
+          </div>
+        </div>
+
+        <!-- Graph 5: Commanded Acceleration pitch_accel_cmd -->
+        <div class="graph-card">
+          <div class="graph-header">
+            <div>
+              <div class="graph-title">5. Guidance Commanded Normal Acceleration (pitch_accel_cmd)</div>
+              <div class="graph-eq">$$a_{pitch\_cmd} = \text{clamp}(N' V_c \dot{\lambda}, -45.0, +45.0)\text{ m/s}^2$$</div>
+            </div>
+            <span class="factor-badge badge-rose">Guidance</span>
+          </div>
+          <div class="canvas-container">
+            <canvas id="canvas_pronav" class="graph-canvas"></canvas>
+            <div id="tooltip_canvas_pronav" class="graph-tooltip"></div>
+          </div>
+        </div>
+
+        <!-- Graph 6: 4-Fin Independent Control Deflections -->
+        <div class="graph-card">
+          <div class="graph-header">
+            <div>
+              <div class="graph-title">6. Independent Fin Deflections & Fin State Transitions</div>
+              <div class="graph-eq">$$\text{Fin State} \in \{\text{STOWED (0-1s)}, \text{DEPLOYING (1-1.5s)}, \text{ACTIVE (1.5-34.8s)}\}$$</div>
+            </div>
+            <span class="factor-badge badge-sky">Actuators</span>
+          </div>
+          <div class="canvas-container">
+            <canvas id="canvas_fins" class="graph-canvas"></canvas>
+            <div id="tooltip_canvas_fins" class="graph-tooltip"></div>
+          </div>
+        </div>
+
+        <!-- Graph 7: EKF State Estimation Error -->
+        <div class="graph-card">
+          <div class="graph-header">
+            <div>
+              <div class="graph-title">7. Extended Kalman Filter (EKF) State Error ‖r - r̂‖</div>
+              <div class="graph-eq">$$\|\mathbf{e}_k\| = \sqrt{(X - \hat{X})^2 + (Y - \hat{Y})^2 + (Z - \hat{Z})^2} < 0.5\text{ m}$$</div>
+            </div>
+            <span class="factor-badge badge-emerald">Navigation</span>
+          </div>
+          <div class="canvas-container">
+            <canvas id="canvas_ekf" class="graph-canvas"></canvas>
+            <div id="tooltip_canvas_ekf" class="graph-tooltip"></div>
+          </div>
+        </div>
+
+        <!-- Graph 8: Monte Carlo Impact Dispersion Scatter -->
+        <div class="graph-card">
+          <div class="graph-header">
+            <div>
+              <div class="graph-title">8. Monte Carlo Simulation Dispersion Scatter (1,000 Runs)</div>
+              <div class="graph-eq">$$\text{CEP}_{30m} \text{ Tactical Threshold}, \quad R_{miss} = \text{final\_error}$$</div>
+            </div>
+            <span class="factor-badge badge-amber">1,000 Runs</span>
+          </div>
+          <div class="canvas-container">
+            <canvas id="canvas_dispersion" class="graph-canvas"></canvas>
+            <div id="tooltip_canvas_dispersion" class="graph-tooltip"></div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Bottom Next Step CTA -->
+      <div class="card" style="margin-top: 20px; background: #08101e; border: 1px solid #1e3a8a; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
+        <a href="formulas.html" class="btn" style="text-decoration:none;">← Back to Step 2: Formulas & Calculations</a>
+        <a href="prediction.html" class="btn btn-primary" style="font-size:13px; font-weight:700; padding:10px 20px; text-decoration:none;">
+          Proceed to Step 4: Flight Prediction →
+        </a>
+      </div>
+    </div>
+  </main>
+
+  <footer style="border-top: 1px solid var(--border-color); padding: 20px; text-align: center; color: var(--text-muted); font-size: 11px; margin-top: 40px;">
+    Aerospace Mathematical Trajectory & Guidance System &middot; Synchronized State Engine &middot; Clean 4-Module Multi-Page Architecture
+  </footer>
+
+  <!-- Core Scripts -->
+  <script src="data/flightTelemetry.js"></script>
+  <script src="data/batchSimRecords.js"></script>
+  <script src="js/math/trained_weights.js"></script>
+  <script src="js/flightState.js"></script>
+  <script src="js/page_graphs.js"></script>
+</body>
+</html>
