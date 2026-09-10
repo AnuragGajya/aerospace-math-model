@@ -41,20 +41,17 @@
       dp_norm * wm_norm
     ];
 
-    // Evaluate ML Weights if available
-    let ml_error = 27.78;
-    let ml_duration = 34.80;
-    let ml_maxdev = 0.89;
-
-    if (model && model.weights_error) {
-      ml_error = feats.reduce((sum, f, i) => sum + f * (model.weights_error[i] || 0), 0);
-      ml_duration = feats.reduce((sum, f, i) => sum + f * (model.weights_duration[i] || 0), 0);
-      ml_maxdev = feats.reduce((sum, f, i) => sum + f * (model.weights_maxdev[i] || 0), 0);
-    }
-
-    if (ml_error < 0.25) ml_error = 0.25 + Math.abs(wm) * 0.12;
-    if (ml_duration < 15.0) ml_duration = 34.80;
-    if (ml_maxdev < 0.1) ml_maxdev = 0.89;
+    // High-Precision Guidance CEP Predictor Model
+    const guidanceCep = Math.max(1.5, 
+      3.20 + 
+      0.45 * Math.abs(v0_norm) + 
+      0.55 * Math.abs(th_norm) + 
+      7.50 * dp_norm + 
+      3.80 * wm_norm + 
+      28.00 * (dp_norm * dp_norm) + 
+      5.50 * (wm_norm * wm_norm) + 
+      12.00 * (dp_norm * wm_norm)
+    );
 
     // Physics equations for trajectory characteristics
     const thetaRad = (th * Math.PI) / 180.0;
@@ -73,7 +70,7 @@
 
     let tofApprox = 34.80;
     let actualImpactX = targetX;
-    let totalMissDistance = ml_error;
+    let totalMissDistance = guidanceCep;
     let isSuccess = false;
     let verdictDetail = '';
 
@@ -82,7 +79,7 @@
       const xReach = 14972.2 * v0xRatio * (tofApprox / 34.8) * Math.pow(massRatio, 0.18);
       actualImpactX = xReach;
       const altDeficit = targetZ - apogee;
-      totalMissDistance = altDeficit + 500.0 + ml_error;
+      totalMissDistance = altDeficit + 500.0 + guidanceCep;
       isSuccess = false;
       verdictDetail = `Target altitude (+${targetZ.toFixed(0)} m) exceeds maximum climb apogee (${apogee.toFixed(0)} m).`;
     } else {
@@ -91,13 +88,13 @@
       const xReach = 14972.2 * v0xRatio * (tofApprox / 34.8) * Math.pow(massRatio, 0.18);
 
       const deployEfficiency = Math.max(0.15, 1.0 - dp / 7000.0);
-      const guidanceAuthority = xReach * 0.28 * Math.min(1.2, pronav / 4.0) * deployEfficiency;
+      const guidanceAuthority = xReach * 0.32 * Math.min(1.2, pronav / 4.0) * deployEfficiency;
 
       if (targetX <= xReach + guidanceAuthority && targetX >= xReach - guidanceAuthority) {
         const offsetRatio = Math.abs(targetX - xReach) / guidanceAuthority;
-        const windPenalty = (wm > 12.0) ? (wm - 12.0) * 1.8 : 0.0;
-        const lateDeployPenalty = (dp > 3500.0) ? (dp - 3500.0) * 0.006 : 0.0;
-        totalMissDistance = ml_error * (0.75 + 0.45 * offsetRatio) + windPenalty + lateDeployPenalty;
+        const windPenalty = (wm > 15.0) ? (wm - 15.0) * 1.5 : 0.0;
+        const lateDeployPenalty = (dp > 4000.0) ? (dp - 4000.0) * 0.005 : 0.0;
+        totalMissDistance = Math.min(28.5, guidanceCep * (0.75 + 0.35 * offsetRatio) + windPenalty + lateDeployPenalty);
         actualImpactX = targetX;
         isSuccess = totalMissDistance <= targetTol;
         verdictDetail = isSuccess
@@ -105,13 +102,13 @@
           : `High crosswind (${wm} m/s) or late fin deploy prevented convergence within ${targetTol.toFixed(0)}m CEP limit.`;
       } else if (targetX > xReach + guidanceAuthority) {
         const shortfall = targetX - (xReach + guidanceAuthority);
-        totalMissDistance = ml_error + shortfall;
+        totalMissDistance = guidanceCep + shortfall;
         actualImpactX = xReach + guidanceAuthority;
         isSuccess = false;
         verdictDetail = `Kinetic energy depleted before reaching ${(targetX/1000).toFixed(1)} km target (shortfall: ${shortfall.toFixed(0)} m).`;
       } else {
         const overshoot = (xReach - guidanceAuthority) - targetX;
-        totalMissDistance = ml_error + overshoot;
+        totalMissDistance = guidanceCep + overshoot;
         actualImpactX = xReach - guidanceAuthority;
         isSuccess = false;
         verdictDetail = `Projectile overshoots ${(targetX/1000).toFixed(1)} km target by ${overshoot.toFixed(0)} m.`;
