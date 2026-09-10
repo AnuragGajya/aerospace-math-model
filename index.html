@@ -16,8 +16,8 @@
       <div class="brand">
         <div class="brand-logo">🚀</div>
         <div>
-          <div class="brand-title">AEROSPACE MATHEMATICAL DYNAMICS MODEL</div>
-          <div class="brand-sub">Trained Flight Telemetry &middot; Machine Learning Predictor &middot; 4 Dedicated Modules in One Unified Platform</div>
+          <div class="brand-title">AEROSPACE MATHEMATICAL DYNAMICS & ML MODEL</div>
+          <div class="brand-sub">6-DOF Physics &middot; Trained Machine Learning Predictor &middot; Target Distance & Height Controls &middot; Mass up to 80 kg</div>
         </div>
       </div>
       <div class="system-status">
@@ -34,10 +34,10 @@
       <div class="page-box active" id="nav-btn-setter" onclick="switchSection('setter')">
         <div class="box-top">
           <span class="box-num">SECTION 1</span>
-          <span class="box-badge badge-sky" id="badge-setter">800m/s &middot; 45.0°</span>
+          <span class="box-badge badge-sky" id="badge-setter">800m/s &middot; 12kg &middot; T: 15km</span>
         </div>
         <div class="box-title">⚙️ Values Setter</div>
-        <div class="box-desc">Configure launch speed, elevation angle, fin deploy triggers, and presets</div>
+        <div class="box-desc">Configure launch kinematics, projectile mass (up to 80kg), and custom target coordinates (X, Z)</div>
       </div>
 
       <!-- Box 2 -->
@@ -47,7 +47,7 @@
           <span class="box-badge badge-emerald" id="badge-formulas">6 Live Formulas</span>
         </div>
         <div class="box-title">⏱️ Formulas & Calculations</div>
-        <div class="box-desc">Mathematical equations with step-by-step numerical evaluation across time</div>
+        <div class="box-desc">Mathematical equations with step-by-step numerical evaluation calculated to target coords</div>
       </div>
 
       <!-- Box 3 -->
@@ -57,7 +57,7 @@
           <span class="box-badge badge-amber" id="badge-graphs">8 Visual Plots</span>
         </div>
         <div class="box-title">📈 All Equation Graphs</div>
-        <div class="box-desc">Dedicated high-contrast plots for every mathematical equation & 1,000 batch runs</div>
+        <div class="box-desc">Dedicated high-contrast plots for every flight equation with dynamic target reticle and CEP limits</div>
       </div>
 
       <!-- Box 4 -->
@@ -67,7 +67,7 @@
           <span class="box-badge badge-purple" id="badge-prediction">ML Predictor</span>
         </div>
         <div class="box-title">🎯 Flight Prediction</div>
-        <div class="box-desc">Trained Machine Learning model predicting CEP miss distance and impact verdict</div>
+        <div class="box-desc">Trained Machine Learning model predicting CEP miss distance, target reachability, and impact verdict</div>
       </div>
     </div>
 
@@ -79,10 +79,10 @@
         <div class="panel-header">
           <div>
             <div class="panel-title">
-              <span>⚙️</span> Section 1: Flight Parameters & Values Setter
+              <span>⚙️</span> Section 1: Flight Parameters & Target Coordinates Setter
             </div>
             <div class="panel-subtitle">
-              Tune initial launch kinematics, guidance constants, and environmental factors. Instant synchronization across all calculations and prediction models!
+              Tune initial launch kinematics, mass up to 80 kg, target distance (X), and target height (Z). Instant synchronization across all formulas, graphs, and predictions!
             </div>
           </div>
           <div style="display: flex; gap: 8px;">
@@ -97,28 +97,28 @@
           <div class="preset-grid">
             <button class="btn btn-preset" onclick="window.applyPreset('nominal')">
               🎯 <strong>Nominal Max Range</strong>
-              <span style="display:block;font-size:10px;color:var(--text-muted);margin-top:2px;">V0: 800 m/s, θ0: 45.0°, Target: 15.0 km</span>
+              <span style="display:block;font-size:10px;color:var(--text-muted);margin-top:2px;">V0: 800 m/s, θ0: 45.0°, Mass: 12kg, Target: 15km</span>
             </button>
             <button class="btn btn-preset" onclick="window.applyPreset('steep')">
-              🏔️ <strong>High-Angle Steep Descent</strong>
-              <span style="display:block;font-size:10px;color:var(--text-muted);margin-top:2px;">V0: 960 m/s, θ0: 52.0°, Deploy: 1.2 km</span>
+              🏔️ <strong>High-Angle Elevated Target</strong>
+              <span style="display:block;font-size:10px;color:var(--text-muted);margin-top:2px;">V0: 960 m/s, θ0: 52.0°, Mass: 24kg, Target Z: +250m</span>
             </button>
-            <button class="btn btn-preset" onclick="window.applyPreset('earlyDeploy')">
-              🛡️ <strong>Early Fin Deployment</strong>
-              <span style="display:block;font-size:10px;color:var(--text-muted);margin-top:2px;">V0: 800 m/s, θ0: 45.0°, Deploy: 0.8 km</span>
+            <button class="btn btn-preset" onclick="window.applyPreset('heavyLongRange')">
+              🛡️ <strong>Heavy Projectile (65 kg)</strong>
+              <span style="display:block;font-size:10px;color:var(--text-muted);margin-top:2px;">V0: 1050 m/s, θ0: 43.5°, Mass: 65kg, Target: 24km</span>
             </button>
             <button class="btn btn-preset" onclick="window.applyPreset('crosswind')">
               💨 <strong>High Crosswind (18 m/s)</strong>
-              <span style="display:block;font-size:10px;color:var(--text-muted);margin-top:2px;">V0: 800 m/s, Wind: 18 m/s @ 90° heading</span>
+              <span style="display:block;font-size:10px;color:var(--text-muted);margin-top:2px;">V0: 850 m/s, Mass: 40kg, Wind: 18 m/s @ 90° heading</span>
             </button>
           </div>
         </div>
 
         <!-- Parameter Controls Grid -->
         <div class="grid-2">
-          <!-- Input Group 1: Launch Kinematics -->
+          <!-- Input Group 1: Launch Kinematics & Heavy Mass -->
           <div class="control-box">
-            <div class="control-box-title">🚀 Launch Initial Kinematics</div>
+            <div class="control-box-title">🚀 Launch Initial Kinematics & Mass</div>
             
             <div class="input-group">
               <div class="input-label-row">
@@ -146,31 +146,73 @@
 
             <div class="input-group">
               <div class="input-label-row">
-                <span class="input-label">Total Launch Mass (W)</span>
+                <span class="input-label">Total Launch Mass (W &middot; Up to 80 kg)</span>
                 <span id="mass_display" class="input-val font-mono text-sky-400 font-bold">12.0 kg</span>
               </div>
               <div class="slider-row">
-                <input id="mass_slider" type="range" min="8.0" max="25.0" step="0.5" value="12.0">
-                <input id="mass_input" class="num-input" type="number" min="8.0" max="25.0" step="0.5" value="12.0">
+                <input id="mass_slider" type="range" min="5.0" max="80.0" step="0.5" value="12.0">
+                <input id="mass_input" class="num-input" type="number" min="5.0" max="80.0" step="0.5" value="12.0">
               </div>
-              <div style="font-size:10px;color:var(--text-muted);margin-top:2px;">Ballistic coefficient $\beta = \frac{m}{C_D S}$. Higher mass retains momentum longer.</div>
+              <div style="font-size:10px;color:var(--text-muted);margin-top:2px;">Ballistic coefficient $\beta = \frac{m}{C_D S}$. Higher mass (up to 80 kg) minimizes drag loss and carries energy further.</div>
             </div>
           </div>
 
-          <!-- Input Group 2: Guidance & Environment -->
+          <!-- Input Group 2: Target Position (Distance & Height) -->
           <div class="control-box">
-            <div class="control-box-title">🎛️ Guidance & Atmospheric Environment</div>
+            <div class="control-box-title">🎯 Custom Target Position (Distance & Height)</div>
 
             <div class="input-group">
               <div class="input-label-row">
-                <span class="input-label">Fin Deployment Downrange (x_deploy)</span>
+                <span class="input-label">Target Downrange Distance (X_target)</span>
+                <span id="targetx_display" class="input-val font-mono text-rose-400 font-bold">15,000 m (15.0 km)</span>
+              </div>
+              <div class="slider-row">
+                <input id="targetx_slider" type="range" min="5000" max="30000" step="100" value="15000">
+                <input id="targetx_input" class="num-input" type="number" min="5000" max="30000" step="100" value="15000">
+              </div>
+              <div style="font-size:10px;color:var(--text-muted);margin-top:2px;">Horizontal distance from launch origin where the intended target is positioned.</div>
+            </div>
+
+            <div class="input-group">
+              <div class="input-label-row">
+                <span class="input-label">Target Height / Altitude (Z_target)</span>
+                <span id="targetz_display" class="input-val font-mono text-rose-400 font-bold">+0 m (Ground Level)</span>
+              </div>
+              <div class="slider-row">
+                <input id="targetz_slider" type="range" min="-500" max="5000" step="25" value="0">
+                <input id="targetz_input" class="num-input" type="number" min="-500" max="5000" step="25" value="0">
+              </div>
+              <div style="font-size:10px;color:var(--text-muted);margin-top:2px;">Elevation of target relative to launch ground (e.g. hill top, tower, valley, elevated terrain).</div>
+            </div>
+
+            <div class="input-group">
+              <div class="input-label-row">
+                <span class="input-label">Target Tactical CEP Tolerance Boundary</span>
+                <span id="targettol_display" class="input-val font-mono text-emerald-400 font-bold">≤ 30.0 m</span>
+              </div>
+              <div class="slider-row">
+                <input id="targettol_slider" type="range" min="5.0" max="50.0" step="1.0" value="30.0">
+                <input id="targettol_input" class="num-input" type="number" min="5.0" max="50.0" step="1.0" value="30.0">
+              </div>
+              <div style="font-size:10px;color:var(--text-muted);margin-top:2px;">Maximum allowed miss distance to consider the guided impact a successful PASS.</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Input Group 3: Guidance & Atmospheric Environment -->
+        <div class="control-box" style="margin-top: 16px;">
+          <div class="control-box-title">🎛️ Guidance Actuation & Environmental Conditions</div>
+          <div class="grid-2">
+            <div class="input-group">
+              <div class="input-label-row">
+                <span class="input-label">Fin Deployment Distance (x_deploy)</span>
                 <span id="xdeploy_display" class="input-val font-mono text-emerald-400 font-bold">1,200 m (1.2 km)</span>
               </div>
               <div class="slider-row">
-                <input id="xdeploy_slider" type="range" min="0" max="12000" step="100" value="1200">
-                <input id="xdeploy_input" class="num-input" type="number" min="0" max="12000" step="100" value="1200">
+                <input id="xdeploy_slider" type="range" min="0" max="15000" step="100" value="1200">
+                <input id="xdeploy_input" class="num-input" type="number" min="0" max="15000" step="100" value="1200">
               </div>
-              <div style="font-size:10px;color:var(--text-muted);margin-top:2px;">Downrange distance trigger where 4 grid fins deploy from locked STOWED state.</div>
+              <div style="font-size:10px;color:var(--text-muted);margin-top:2px;">Downrange distance trigger where grid fins deploy from locked STOWED state.</div>
             </div>
 
             <div class="input-group">
@@ -179,22 +221,10 @@
                 <span id="wind_display" class="input-val font-mono text-emerald-400 font-bold">5.0 m/s</span>
               </div>
               <div class="slider-row">
-                <input id="wind_slider" type="range" min="0.0" max="25.0" step="0.5" value="5.0">
-                <input id="wind_input" class="num-input" type="number" min="0.0" max="25.0" step="0.5" value="5.0">
+                <input id="wind_slider" type="range" min="0.0" max="30.0" step="0.5" value="5.0">
+                <input id="wind_input" class="num-input" type="number" min="0.0" max="30.0" step="0.5" value="5.0">
               </div>
-              <div style="font-size:10px;color:var(--text-muted);margin-top:2px;">Lateral crosswind creates aerodynamic side-slip angle $\beta_{aero}$ and lateral drift.</div>
-            </div>
-
-            <div class="input-group">
-              <div class="input-label-row">
-                <span class="input-label">ProNav Guidance Gain (N')</span>
-                <span id="pronav_display" class="input-val font-mono text-emerald-400 font-bold">4.0 (Optimal True ProNav)</span>
-              </div>
-              <div class="slider-row">
-                <input id="pronav_slider" type="range" min="2.0" max="6.0" step="0.1" value="4.0">
-                <input id="pronav_input" class="num-input" type="number" min="2.0" max="6.0" step="0.1" value="4.0">
-              </div>
-              <div style="font-size:10px;color:var(--text-muted);margin-top:2px;">Navigation constant in $a_{cmd} = N' V_c \dot{\lambda}$. Higher gain responds faster.</div>
+              <div style="font-size:10px;color:var(--text-muted);margin-top:2px;">Lateral wind disturbance causing drift and sideslip angle $\beta_{aero}$.</div>
             </div>
           </div>
         </div>
@@ -203,8 +233,8 @@
         <div class="card" style="margin-top: 20px; background: #08101e; border: 1px solid #1e3a8a;">
           <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
             <div>
-              <div style="font-weight:700; color:var(--text-main); font-size:14px;">📡 Synchronized Flight Parameter State</div>
-              <div style="color:var(--text-muted); font-size:11px;">Parameters are saved into local state memory. Changing values here dynamically updates formulas, graphs, and predictions across all sections!</div>
+              <div style="font-weight:700; color:var(--text-main); font-size:14px;">📡 Synchronized Flight Parameter & Target State</div>
+              <div style="color:var(--text-muted); font-size:11px;">Parameters and Target Coordinates $(X_{target}, Z_{target})$ are saved into shared state. Changing values here dynamically updates formulas, graphs, and predictions across all sections!</div>
             </div>
             <div style="display:flex; gap:10px;">
               <button id="applySaveBtn" class="btn btn-success" style="font-size:13px; font-weight:700; padding:10px 20px;">
@@ -230,7 +260,7 @@
               <span>⏱️</span> Section 2: Mathematical Formulas & Live Telemetry Calculations
             </div>
             <div class="panel-subtitle">
-              Scrub the timeline or click Play: every formula card calculates and displays its exact numerical output at that time step from the Excel dataset!
+              Scrub the timeline or click Play: every formula card calculates and displays its exact numerical output at that time step evaluated toward your target $(X_{target}, Z_{target})$!
             </div>
           </div>
           <div style="display: flex; align-items: center; gap: 8px;">
@@ -254,16 +284,16 @@
         <!-- 6 Dynamic Mathematical Formula Calculation Cards Grid -->
         <div class="grid-2">
           
-          <!-- Formula 1: Translational Kinematics -->
+          <!-- Formula 1: Translational Kinematics & Heavy Mass -->
           <div class="live-calc-card">
             <div>
               <div class="calc-header">
                 <span class="factor-badge badge-sky">1. Kinematics & Accelerations</span>
                 <span class="font-mono text-sky-400 text-xs" id="calcTime1">t = 0.02 s</span>
               </div>
-              <div class="calc-title">Translational Equations of Motion</div>
+              <div class="calc-title">Translational Equations of Motion (Mass $m \le 80\text{ kg}$)</div>
               <div class="formula-display">
-                $$\dot{\mathbf{r}} = \mathbf{V}, \quad m \frac{d\mathbf{V}}{dt} = \mathbf{F}_{aero} + m\mathbf{g}$$
+                $$\dot{\mathbf{r}} = \mathbf{V}, \quad m \frac{d\mathbf{V}}{dt} = \mathbf{F}_{aero} + m\mathbf{g}, \quad F_g = m \cdot 9.80665\text{ N}$$
                 $$a_x = \frac{D_x + L_x + S_x}{m}, \quad a_z = \frac{D_z + L_z - mg}{m}$$
               </div>
             </div>
@@ -272,7 +302,7 @@
               <div style="font-size:10px;font-weight:700;color:#34d399;margin-bottom:4px;">⚡ Live Evaluated Values at this Instant:</div>
               <div class="output-row"><span class="output-label">Position [X, Y, Z]:</span><span id="f1_pos" class="output-val">[17.71, -0.00, 23.02] m</span></div>
               <div class="output-row"><span class="output-label">Velocity [Vx, Vy, Vz]:</span><span id="f1_vel" class="output-val">[884.80, -0.01, 650.54] m/s</span></div>
-              <div class="output-row"><span class="output-label">Net Acceleration a_net:</span><span id="f1_accel" class="output-val">0.00 m/s²</span></div>
+              <div class="output-row"><span class="output-label">Net Acceleration & Force:</span><span id="f1_accel" class="output-val">0.00 m/s² (Mass: 12.0kg, Fg: 117.7N)</span></div>
               <div class="output-row"><span class="output-label">Gravity Vector g:</span><span class="output-val">[0, 0, -9.81] m/s²</span></div>
             </div>
           </div>
@@ -326,23 +356,23 @@
             </div>
           </div>
 
-          <!-- Formula 4: Guidance Commands -->
+          <!-- Formula 4: Guidance Commands toward Custom Target -->
           <div class="live-calc-card">
             <div>
               <div class="calc-header">
-                <span class="factor-badge badge-purple">4. Guidance Law Commands</span>
+                <span class="factor-badge badge-purple">4. Target Guidance Law (Custom Target)</span>
                 <span class="font-mono text-purple-400 text-xs" id="calcTime4">t = 0.02 s</span>
               </div>
-              <div class="calc-title">Guidance Acceleration Demands (pitch_accel_cmd)</div>
+              <div class="calc-title">ProNav Guidance Demands to Target $(X_{target}, Z_{target})$</div>
               <div class="formula-display">
-                $$a_{cmd} = N' \cdot V_c \cdot \dot{\lambda}, \quad \dot{\lambda} = \frac{R_x V_z - R_z V_x}{R^2}$$
-                $$a_{pitch\_cmd} \in [-45.0, +45.0]\text{ m/s}^2$$
+                $$R(t) = \sqrt{(X_{target} - X)^2 + (Z_{target} - Z)^2}, \quad \dot{\lambda} = \frac{(X_{tgt} - X) V_z - (Z_{tgt} - Z) V_x}{R^2}$$
+                $$a_{cmd} = N' \cdot V_c \cdot \dot{\lambda} \in [-45.0, +45.0]\text{ m/s}^2$$
               </div>
             </div>
             
             <div class="live-output-box">
               <div style="font-size:10px;font-weight:700;color:#34d399;margin-bottom:4px;">⚡ Live Evaluated Values at this Instant:</div>
-              <div class="output-row"><span class="output-label">Distance to Target (15km):</span><span id="f4_range" class="output-val">14,982.3 m</span></div>
+              <div class="output-row"><span class="output-label">Distance to Target (X_tgt, Z_tgt):</span><span id="f4_range" class="output-val">14,982.3 m to Target (15000m, 0m)</span></div>
               <div class="output-row"><span class="output-label">Closing Velocity (Vc):</span><span id="f4_vc" class="output-val">884.8 m/s</span></div>
               <div class="output-row"><span class="output-label">Line-of-Sight Rate (λ̇):</span><span id="f4_los_rate" class="output-val">-0.00004 rad/s</span></div>
               <div class="output-row"><span class="output-label">Guidance Gain (N'):</span><span id="f4_gain" class="output-val">4.00</span></div>
@@ -418,7 +448,7 @@
               <span>📈</span> Section 3: Dedicated Graphs for Every Flight Equation
             </div>
             <div class="panel-subtitle">
-              8 standalone, high-contrast visual plots representing every mathematical formula in the aerodynamic trajectory model and 1,000 batch simulation runs.
+              8 standalone, high-contrast visual plots representing every mathematical formula in the model, dynamically scaled to your target coordinates $(X_{target}, Z_{target})$ and mass!
             </div>
           </div>
           <div style="display:flex; align-items:center; gap:8px;">
@@ -434,8 +464,8 @@
           <div class="graph-card">
             <div class="graph-header">
               <div>
-                <div class="graph-title">1. Altitude Profile Z(X) vs Downrange Distance</div>
-                <div class="graph-eq">$$Z(X) = X \tan \theta_0 - \frac{g X^2}{2 V_0^2 \cos^2 \theta_0} + \Delta Z_{aero}, \quad Z_{max} = 3,273.7\text{ m}$$</div>
+                <div class="graph-title">1. Altitude Profile Z(X) with Dynamic Target Marker</div>
+                <div class="graph-eq">$$Z(X) = X \tan \theta_0 - \frac{g X^2}{2 V_0^2 \cos^2 \theta_0} + \Delta Z_{aero}, \quad \text{Target at } (X_{tgt}, Z_{tgt})$$</div>
               </div>
               <span class="factor-badge badge-sky">Trajectory</span>
             </div>
@@ -533,7 +563,7 @@
             <div class="graph-header">
               <div>
                 <div class="graph-title">8. Monte Carlo Simulation Dispersion Scatter (1,000 Runs)</div>
-                <div class="graph-eq">$$\text{CEP}_{30m} \text{ Tactical Threshold}, \quad R_{miss} = \text{final\_error}$$</div>
+                <div class="graph-eq">$$\text{CEP Boundary: } R_{miss} \le R_{tol}, \quad \text{Tested across 1,000 Batch Runs}$$</div>
               </div>
               <span class="factor-badge badge-amber">1,000 Runs</span>
             </div>
@@ -565,7 +595,7 @@
               <span>🎯</span> Section 4: ML & Mathematical Flight Outcome Prediction
             </div>
             <div class="panel-subtitle">
-              Trained Machine Learning Model (Polynomial Ridge Regression over 1,000 Excel simulation records) predicting future flight outcomes for any given parameters.
+              Calculates target reachability, required flight time, and CEP miss distance for your custom Target $(X_{target}, Z_{target})$ and mass (up to 80 kg).
             </div>
           </div>
           <div style="display: flex; gap: 8px;">
@@ -581,7 +611,7 @@
               <div style="font-size:11px; text-transform:uppercase; letter-spacing:1px; color:#34d399; font-weight:700;">PREDICTED MISSION OUTCOME (TRAINED ML MODEL)</div>
               <div id="verdictTitle" style="font-size:22px; font-weight:800; color:#f8fafc; margin-top:4px;">TARGET HIT (PASS) &middot; PRECISION ACCURACY</div>
               <div id="verdictDesc" style="font-size:12px; color:var(--text-secondary); margin-top:4px;">
-                Guided trajectory with active 4-fin stabilization corrects for aerodynamic drag and lateral crosswind, achieving sub-30m accuracy (nominal: 27.78m) on the 15,000m target.
+                Guided trajectory with active 4-fin stabilization corrects for aerodynamic drag and lateral crosswind, achieving target precision within tolerance.
               </div>
             </div>
             <div id="verdictBadge" class="factor-badge badge-emerald" style="font-size:14px; padding:8px 18px; font-weight:800;">
@@ -593,27 +623,27 @@
         <!-- 4 Core Metric Cards -->
         <div class="grid-4" style="margin-bottom: 20px;">
           <div class="metric-card">
-            <div class="metric-label">Predicted Miss Distance (final_error)</div>
+            <div class="metric-label">Predicted Miss Distance (to Target)</div>
             <div id="pred_cep" class="metric-val" style="color:#34d399;">27.78 m</div>
-            <div class="metric-sub">Tactical Threshold: &le; 30.0 m</div>
+            <div class="metric-sub">Tolerance Threshold: ≤ 30.0 m</div>
           </div>
 
           <div class="metric-card">
             <div class="metric-label">Predicted Apogee Altitude (Z_max)</div>
             <div id="pred_apogee" class="metric-val" style="color:#38bdf8;">3,273.7 m</div>
-            <div class="metric-sub">Time to Apogee: 13.08 s</div>
+            <div class="metric-sub">Time to Apogee: ~13.08 s</div>
           </div>
 
           <div class="metric-card">
-            <div class="metric-label">Total Downrange Distance (X_final)</div>
+            <div class="metric-label">Impact Downrange Distance (X_final)</div>
             <div id="pred_range" class="metric-val" style="color:#f59e0b;">14,972.2 m</div>
-            <div class="metric-sub">Target Coords: (15000.0, 0.0)</div>
+            <div class="metric-sub">Target Coords: (X_tgt, Z_tgt)</div>
           </div>
 
           <div class="metric-card">
             <div class="metric-label">Total Time of Flight (duration)</div>
             <div id="pred_tof" class="metric-val" style="color:#a855f7;">34.80 s</div>
-            <div class="metric-sub">Touchdown Speed: 248.3 m/s</div>
+            <div class="metric-sub">Flight Velocity Decay Model</div>
           </div>
         </div>
 
@@ -632,7 +662,7 @@
                 <span class="font-mono" style="font-size:11px; color:var(--text-muted);">t = 0.00s to 1.00s</span>
               </div>
               <div style="font-size:12px; color:var(--text-secondary); line-height:1.6;">
-                Vehicle launches at $V_0 = 800\text{ m/s}$ (Mach 2.35) at $\theta_0 = 45.0^\circ$. Fins remain mechanically STOWED ($\text{ctrl\_pitch\_deg} = 0.0^\circ$, $\text{ctrl\_yaw\_deg} = 0.0^\circ$). Initial dynamic pressure $q = 732\text{ kPa}$ produces maximum wave drag.
+                Vehicle launches at muzzle velocity $V_0$ at elevation $\theta_0$. Fins remain mechanically STOWED ($\text{ctrl\_pitch\_deg} = 0.0^\circ$, $\text{ctrl\_yaw\_deg} = 0.0^\circ$). Initial dynamic pressure $q = 732\text{ kPa}$ produces maximum supersonic wave drag.
               </div>
             </div>
 
@@ -640,10 +670,10 @@
             <div style="background:#04070f; border-left:4px solid #f59e0b; padding:12px 16px; border-radius:8px;">
               <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
                 <span style="font-weight:700; color:#fbbf24; font-size:13px;">Phase 2: Fin Deployment Transition (1.02s – 1.50s) &middot; DEPLOYING</span>
-                <span class="font-mono" style="font-size:11px; color:var(--text-muted);">X &ge; 871m to 1,261m</span>
+                <span class="font-mono" style="font-size:11px; color:var(--text-muted);">Triggered at x_deploy</span>
               </div>
               <div style="font-size:12px; color:var(--text-secondary); line-height:1.6;">
-                At $t = 1.02\text{s}$, the fin deployment trigger activates. Actuators unlock the 4 grid control surfaces from stowed fairing recesses. The system verifies electrical bus continuity ($28.0\text{V}$) and prepares for active stabilization.
+                Upon passing $x_{\text{deploy}}$, the deployment trigger activates. Actuators unlock the 4 grid control surfaces from stowed fairing recesses. The system verifies electrical bus continuity ($28.0\text{V}$) and prepares for active stabilization.
               </div>
             </div>
 
@@ -651,10 +681,10 @@
             <div style="background:#04070f; border-left:4px solid #10b981; padding:12px 16px; border-radius:8px;">
               <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
                 <span style="font-weight:700; color:#34d399; font-size:13px;">Phase 3: Active Guided Deceleration & Apogee Peak (1.52s – 33.00s) &middot; STABILIZATION ACTIVE</span>
-                <span class="font-mono" style="font-size:11px; color:var(--text-muted);">Apogee: t = 13.08s (3,273.7m)</span>
+                <span class="font-mono" style="font-size:11px; color:var(--text-muted);">Apogee: Peak Altitude Crest</span>
               </div>
               <div style="font-size:12px; color:var(--text-secondary); line-height:1.6;">
-                Fins engage with pitch command $a_{pitch\_cmd} = -45.0\text{ m/s}^2$ and pitch deflection up to $-19.0^\circ$. The vehicle climbs to peak apogee $Z_{max} = 3,273.7\text{ m}$ at $t = 13.08\text{s}$, seamlessly transitions over the crest, and begins guided supersonic-to-subsonic descent.
+                Fins engage with pitch command $a_{pitch\_cmd} = -45.0\text{ m/s}^2$ and pitch deflection up to $-19.0^\circ$. The vehicle climbs to peak apogee, seamlessly transitions over the crest, and begins guided supersonic-to-subsonic descent toward $(X_{target}, Z_{target})$.
               </div>
             </div>
 
@@ -662,10 +692,10 @@
             <div style="background:#04070f; border-left:4px solid #a855f7; padding:12px 16px; border-radius:8px;">
               <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
                 <span style="font-weight:700; color:#c084fc; font-size:13px;">Phase 4: Terminal Intercept & Impact (33.00s – 34.80s)</span>
-                <span class="font-mono" style="font-size:11px; color:var(--text-muted);">Touchdown: t = 34.80s at X = 14,972.2m</span>
+                <span class="font-mono" style="font-size:11px; color:var(--text-muted);">Target Intercept at (X_target, Z_target)</span>
               </div>
               <div style="font-size:12px; color:var(--text-secondary); line-height:1.6;">
-                Extended Kalman Filter tracks the terminal intercept with sub-meter innovation error ($0.12\text{m}$). The projectile hits ground level ($Z = 0.0\text{m}$) at downrange $X = 14,972.2\text{m}$, yielding a precise miss distance of $27.78\text{m}$ from the $15,000\text{m}$ target—scoring a validated mission PASS.
+                Extended Kalman Filter tracks the terminal intercept with sub-meter innovation error ($0.12\text{m}$). The projectile hits the target coordinate $(X_{target}, Z_{target})$, validating mission success within the tactical tolerance radius.
               </div>
             </div>
 

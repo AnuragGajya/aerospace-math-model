@@ -2,10 +2,10 @@
  * app.js
  * Unified Single-Page Application Controller
  * Handles 4 Dedicated Sections:
- *   1. Values Setter
- *   2. Formulas & Calculations
- *   3. All Equation Graphs
- *   4. Flight Prediction
+ *   1. Values Setter (Mass up to 80kg, Target Distance & Target Height)
+ *   2. Formulas & Calculations (Dynamic evaluation against target coords & mass)
+ *   3. All Equation Graphs (Dynamic canvas scaling with custom target marker)
+ *   4. Flight Prediction (Physics + ML prediction for arbitrary target & mass)
  */
 
 (function() {
@@ -14,6 +14,9 @@
     v0: 800.0,
     theta0: 45.0,
     mass: 12.0,
+    targetX: 15000.0,
+    targetZ: 0.0,
+    targetTol: 30.0,
     xdeploy: 1200.0,
     wind: 5.0,
     windDir: -80.0,
@@ -94,6 +97,18 @@
     const massInput = document.getElementById('mass_input');
     const massDisplay = document.getElementById('mass_display');
 
+    const targetXSlider = document.getElementById('targetx_slider');
+    const targetXInput = document.getElementById('targetx_input');
+    const targetXDisplay = document.getElementById('targetx_display');
+
+    const targetZSlider = document.getElementById('targetz_slider');
+    const targetZInput = document.getElementById('targetz_input');
+    const targetZDisplay = document.getElementById('targetz_display');
+
+    const targetTolSlider = document.getElementById('targettol_slider');
+    const targetTolInput = document.getElementById('targettol_input');
+    const targetTolDisplay = document.getElementById('targettol_display');
+
     const xdeploySlider = document.getElementById('xdeploy_slider');
     const xdeployInput = document.getElementById('xdeploy_input');
     const xdeployDisplay = document.getElementById('xdeploy_display');
@@ -119,6 +134,24 @@
       if (massInput) massInput.value = s.mass;
       if (massDisplay) massDisplay.textContent = `${parseFloat(s.mass).toFixed(1)} kg`;
 
+      if (targetXSlider) targetXSlider.value = s.targetX !== undefined ? s.targetX : 15000;
+      if (targetXInput) targetXInput.value = s.targetX !== undefined ? s.targetX : 15000;
+      if (targetXDisplay) {
+        const tx = parseFloat(s.targetX !== undefined ? s.targetX : 15000);
+        targetXDisplay.textContent = `${parseInt(tx).toLocaleString()} m (${(tx/1000).toFixed(1)} km)`;
+      }
+
+      if (targetZSlider) targetZSlider.value = s.targetZ !== undefined ? s.targetZ : 0;
+      if (targetZInput) targetZInput.value = s.targetZ !== undefined ? s.targetZ : 0;
+      if (targetZDisplay) {
+        const tz = parseFloat(s.targetZ !== undefined ? s.targetZ : 0);
+        targetZDisplay.textContent = tz >= 0 ? `+${tz.toFixed(0)} m (Elevated)` : `${tz.toFixed(0)} m (Depressed)`;
+      }
+
+      if (targetTolSlider) targetTolSlider.value = s.targetTol !== undefined ? s.targetTol : 30;
+      if (targetTolInput) targetTolInput.value = s.targetTol !== undefined ? s.targetTol : 30;
+      if (targetTolDisplay) targetTolDisplay.textContent = `≤ ${parseFloat(s.targetTol !== undefined ? s.targetTol : 30).toFixed(1)} m`;
+
       if (xdeploySlider) xdeploySlider.value = s.xdeploy;
       if (xdeployInput) xdeployInput.value = s.xdeploy;
       if (xdeployDisplay) xdeployDisplay.textContent = `${parseInt(s.xdeploy).toLocaleString()} m (${(s.xdeploy/1000).toFixed(1)} km)`;
@@ -133,7 +166,7 @@
 
       // Update badge on Nav Box 1
       const b1 = document.getElementById('badge-setter');
-      if (b1) b1.textContent = `${parseFloat(s.v0).toFixed(0)}m/s · ${parseFloat(s.theta0).toFixed(1)}°`;
+      if (b1) b1.textContent = `${parseFloat(s.v0).toFixed(0)}m/s · ${parseFloat(s.mass).toFixed(0)}kg · T: ${(s.targetX/1000).toFixed(1)}km`;
     }
 
     function syncAndSave() {
@@ -141,6 +174,9 @@
         v0: parseFloat(v0Slider ? v0Slider.value : 800),
         theta0: parseFloat(theta0Slider ? theta0Slider.value : 45),
         mass: parseFloat(massSlider ? massSlider.value : 12),
+        targetX: parseFloat(targetXSlider ? targetXSlider.value : 15000),
+        targetZ: parseFloat(targetZSlider ? targetZSlider.value : 0),
+        targetTol: parseFloat(targetTolSlider ? targetTolSlider.value : 30),
         xdeploy: parseFloat(xdeploySlider ? xdeploySlider.value : 1200),
         wind: parseFloat(windSlider ? windSlider.value : 5),
         windDir: -80.0,
@@ -149,6 +185,7 @@
       FlightStateManager.saveState(state);
       updateSetterUI(state);
       if (window.updatePredictionUI) window.updatePredictionUI();
+      if (window.drawAllGraphs) window.drawAllGraphs();
     }
 
     function linkSliderInput(slider, input) {
@@ -160,6 +197,9 @@
     linkSliderInput(v0Slider, v0Input);
     linkSliderInput(theta0Slider, theta0Input);
     linkSliderInput(massSlider, massInput);
+    linkSliderInput(targetXSlider, targetXInput);
+    linkSliderInput(targetZSlider, targetZInput);
+    linkSliderInput(targetTolSlider, targetTolInput);
     linkSliderInput(xdeploySlider, xdeployInput);
     linkSliderInput(windSlider, windInput);
     linkSliderInput(pronavSlider, pronavInput);
@@ -167,31 +207,38 @@
     window.applyPreset = function(type) {
       let pState = {};
       if (type === 'nominal') {
-        pState = { v0: 800, theta0: 45.0, mass: 12.0, xdeploy: 1200, wind: 5.0, windDir: -80.0, pronav: 4.0 };
+        pState = { v0: 800, theta0: 45.0, mass: 12.0, targetX: 15000, targetZ: 0, targetTol: 30, xdeploy: 1200, wind: 5.0, windDir: -80.0, pronav: 4.0 };
       } else if (type === 'steep') {
-        pState = { v0: 960, theta0: 52.0, mass: 12.0, xdeploy: 1200, wind: 5.0, windDir: -80.0, pronav: 4.2 };
-      } else if (type === 'earlyDeploy') {
-        pState = { v0: 800, theta0: 45.0, mass: 12.0, xdeploy: 800, wind: 5.0, windDir: -80.0, pronav: 4.0 };
+        pState = { v0: 960, theta0: 52.0, mass: 24.0, targetX: 16500, targetZ: 250, targetTol: 30, xdeploy: 1200, wind: 5.0, windDir: -80.0, pronav: 4.2 };
+      } else if (type === 'heavyLongRange') {
+        pState = { v0: 1050, theta0: 43.5, mass: 65.0, targetX: 24000, targetZ: 100, targetTol: 30, xdeploy: 1500, wind: 3.0, windDir: -80.0, pronav: 4.5 };
       } else if (type === 'crosswind') {
-        pState = { v0: 800, theta0: 45.0, mass: 12.0, xdeploy: 1200, wind: 18.0, windDir: 90.0, pronav: 4.5 };
+        pState = { v0: 850, theta0: 45.0, mass: 40.0, targetX: 15000, targetZ: 0, targetTol: 30, xdeploy: 1200, wind: 18.0, windDir: 90.0, pronav: 4.5 };
       }
       FlightStateManager.saveState(pState);
       state = pState;
       updateSetterUI(state);
       if (window.updatePredictionUI) window.updatePredictionUI();
+      if (window.drawAllGraphs) window.drawAllGraphs();
     };
 
     window.randomizeValues = function() {
-      const speeds = [780, 800, 840, 890, 920, 960, 1040, 1080];
-      const angles = [40.0, 42.5, 45.0, 47.5, 49.0, 52.0];
-      const deploys = [0, 800, 1200, 2400, 4800, 7200, 9600];
-      const winds = [0.0, 3.5, 5.0, 8.5, 12.0, 16.5, 19.0];
+      const speeds = [780, 800, 850, 920, 960, 1020, 1100, 1150];
+      const angles = [35.0, 40.0, 42.5, 45.0, 47.5, 50.0, 55.0];
+      const masses = [10.0, 15.0, 25.0, 40.0, 55.0, 70.0, 80.0];
+      const targetXs = [8000, 12000, 15000, 18000, 22000, 26000];
+      const targetZs = [-200, 0, 150, 400, 800, 1500];
+      const deploys = [0, 800, 1200, 2400, 4800, 7200];
+      const winds = [0.0, 3.5, 5.0, 8.5, 12.0, 16.5, 22.0];
       const pick = arr => arr[Math.floor(Math.random() * arr.length)];
 
       const randState = {
         v0: pick(speeds),
         theta0: pick(angles),
-        mass: 12.0,
+        mass: pick(masses),
+        targetX: pick(targetXs),
+        targetZ: pick(targetZs),
+        targetTol: 30.0,
         xdeploy: pick(deploys),
         wind: pick(winds),
         windDir: pick([-90, -80, 0, 45, 90]),
@@ -201,6 +248,7 @@
       state = randState;
       updateSetterUI(state);
       if (window.updatePredictionUI) window.updatePredictionUI();
+      if (window.drawAllGraphs) window.drawAllGraphs();
     };
 
     const resetBtn = document.getElementById('resetParamsBtn');
@@ -209,6 +257,7 @@
         state = FlightStateManager.resetToDefault();
         updateSetterUI(state);
         if (window.updatePredictionUI) window.updatePredictionUI();
+        if (window.drawAllGraphs) window.drawAllGraphs();
       });
     }
 
@@ -256,6 +305,9 @@
 
       const d = telem[idx];
       const t = d.t || (idx * 0.02);
+      const curMass = parseFloat(state.mass) || 12.0;
+      const curTargetX = parseFloat(state.targetX) || 15000.0;
+      const curTargetZ = parseFloat(state.targetZ) || 0.0;
 
       if (timeBadge) {
         timeBadge.textContent = `t = ${t.toFixed(2)} s (Step ${idx + 1} / ${telem.length})`;
@@ -275,13 +327,14 @@
       const vz = (d.vel_z || 0).toFixed(2);
       const speed = Math.sqrt(d.vel_x*d.vel_x + d.vel_y*d.vel_y + d.vel_z*d.vel_z);
       const netAccel = (d.pitch_accel_cmd !== undefined ? Math.abs(d.pitch_accel_cmd) : 9.81).toFixed(2);
+      const gravityForce = (curMass * 9.80665).toFixed(1);
 
       const f1_pos = document.getElementById('f1_pos');
       const f1_vel = document.getElementById('f1_vel');
       const f1_accel = document.getElementById('f1_accel');
       if (f1_pos) f1_pos.textContent = `[${px}, ${py}, ${pz}] m`;
       if (f1_vel) f1_vel.textContent = `[${vx}, ${vy}, ${vz}] m/s (${speed.toFixed(1)} m/s total)`;
-      if (f1_accel) f1_accel.textContent = `${netAccel} m/s² (Cmd: ${d.pitch_accel_cmd || 0} m/s²)`;
+      if (f1_accel) f1_accel.textContent = `${netAccel} m/s² (Mass: ${curMass.toFixed(1)}kg, Fg: ${gravityForce}N)`;
 
       // F2: Aerothermodynamics
       const alt = Math.max(0, d.pos_z || 0);
@@ -326,10 +379,9 @@
         f3_fin_status.style.color = finState === 'STABILIZATION ACTIVE' ? '#34d399' : (finState === 'DEPLOYING' ? '#fbbf24' : '#94a3b8');
       }
 
-      // F4: Guidance
-      const targetX = 15000.0;
-      const rx = targetX - (d.pos_x || 0);
-      const rz = -(d.pos_z || 0);
+      // F4: Guidance against user custom Target [targetX, targetZ]
+      const rx = curTargetX - (d.pos_x || 0);
+      const rz = curTargetZ - (d.pos_z || 0);
       const range = Math.sqrt(rx*rx + rz*rz);
       const vc = (rx*d.vel_x + rz*d.vel_z) / Math.max(1.0, range);
       const losRate = (rx*d.vel_z - rz*d.vel_x) / Math.max(1.0, range*range);
@@ -341,7 +393,7 @@
       const f4_gain = document.getElementById('f4_gain');
       const f4_acmd = document.getElementById('f4_acmd');
 
-      if (f4_range) f4_range.textContent = `${range.toFixed(1)} m`;
+      if (f4_range) f4_range.textContent = `${range.toFixed(1)} m to Target (${curTargetX.toFixed(0)}m, ${curTargetZ.toFixed(0)}m)`;
       if (f4_vc) f4_vc.textContent = `${vc.toFixed(1)} m/s`;
       if (f4_los_rate) f4_los_rate.textContent = `${losRate.toFixed(5)} rad/s`;
       if (f4_gain) f4_gain.textContent = `${parseFloat(state.pronav).toFixed(2)}`;
@@ -386,7 +438,7 @@
         f6_phase.style.color = phaseColor;
       }
       if (f6_deploy_rem) {
-        f6_deploy_rem.textContent = finState === 'STOWED' ? `${Math.max(0, 1200 - (d.pos_x||0)).toFixed(1)} m to trigger` : `ACTIVE (${finState})`;
+        f6_deploy_rem.textContent = finState === 'STOWED' ? `${Math.max(0, state.xdeploy - (d.pos_x||0)).toFixed(1)} m to trigger` : `ACTIVE (${finState})`;
       }
       if (f6_volt) f6_volt.textContent = `${(28.0 - (idx / telem.length) * 0.8).toFixed(2)} V`;
       if (f6_temp) f6_temp.textContent = `${(24.0 + (idx / telem.length) * 6.5).toFixed(1)} °C (Nominal)`;
@@ -530,16 +582,22 @@
       const { ctx, w, h } = setup;
       const pad = { left: 50, right: 20, top: 20, bottom: 35 };
 
-      const xMax = 16000;
-      const zMax = 3600;
-      const { plotW, plotH } = drawGrid(ctx, w, h, pad, 'Downrange Distance X (m)', 'Altitude Z (m)', 0, xMax, 0, zMax);
+      const curTargetX = parseFloat(state.targetX) || 15000.0;
+      const curTargetZ = parseFloat(state.targetZ) || 0.0;
 
+      const xMax = Math.max(16000, curTargetX + 2000);
+      const zMax = Math.max(3600, curTargetZ + 1000);
+      const zMin = Math.min(0, curTargetZ - 500);
+
+      const { plotW, plotH } = drawGrid(ctx, w, h, pad, 'Downrange Distance X (m)', 'Altitude Z (m)', 0, xMax, zMin, zMax);
+
+      // Trajectory Line
       ctx.strokeStyle = '#38bdf8';
       ctx.lineWidth = 2.5;
       ctx.beginPath();
       telem.forEach((pt, i) => {
         const px = pad.left + ((pt.pos_x || 0) / xMax) * plotW;
-        const py = pad.top + plotH - (Math.max(0, pt.pos_z || 0) / zMax) * plotH;
+        const py = pad.top + plotH - (((pt.pos_z || 0) - zMin) / (zMax - zMin)) * plotH;
         if (i === 0) ctx.moveTo(px, py);
         else ctx.lineTo(px, py);
       });
@@ -547,7 +605,7 @@
 
       // Apogee Marker
       const apogeeX = pad.left + (8079.5 / xMax) * plotW;
-      const apogeeY = pad.top + plotH - (3273.7 / zMax) * plotH;
+      const apogeeY = pad.top + plotH - ((3273.7 - zMin) / (zMax - zMin)) * plotH;
       ctx.fillStyle = '#34d399';
       ctx.beginPath();
       ctx.arc(apogeeX, apogeeY, 4, 0, Math.PI * 2);
@@ -555,14 +613,22 @@
       ctx.font = '10px sans-serif';
       ctx.fillText('Apogee 3,273.7m', apogeeX + 8, apogeeY - 4);
 
-      // Target Marker (15,000m)
-      const targetX = pad.left + (15000 / xMax) * plotW;
-      const targetY = pad.top + plotH;
+      // Target Marker (Dynamic based on user custom TargetX and TargetZ)
+      const targetPxX = pad.left + (curTargetX / xMax) * plotW;
+      const targetPxY = pad.top + plotH - ((curTargetZ - zMin) / (zMax - zMin)) * plotH;
+      
+      // Target reticle
+      ctx.strokeStyle = '#ef4444';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.arc(targetPxX, targetPxY, 7, 0, Math.PI * 2);
+      ctx.stroke();
       ctx.fillStyle = '#ef4444';
       ctx.beginPath();
-      ctx.arc(targetX, targetY, 5, 0, Math.PI * 2);
+      ctx.arc(targetPxX, targetPxY, 3, 0, Math.PI * 2);
       ctx.fill();
-      ctx.fillText('Target (15km)', targetX - 35, targetY - 8);
+      
+      ctx.fillText(`Target (${(curTargetX/1000).toFixed(1)}km, ${curTargetZ.toFixed(0)}m)`, Math.min(targetPxX - 40, w - pad.right - 100), targetPxY - 10);
     }
 
     function drawVelocity() {
@@ -774,10 +840,11 @@
       const { ctx, w, h } = setup;
       const pad = { left: 50, right: 20, top: 20, bottom: 35 };
 
+      const curTol = parseFloat(state.targetTol) || 30.0;
       const errMax = 8000;
       const { plotW, plotH } = drawGrid(ctx, w, h, pad, 'Max Lateral Dev (m)', 'Final Error to Target (m)', 0, 50, 0, errMax);
 
-      const cepY = pad.top + plotH - (30.0 / errMax) * plotH;
+      const cepY = pad.top + plotH - (curTol / errMax) * plotH;
       ctx.strokeStyle = '#10b981';
       ctx.lineWidth = 1.5;
       ctx.setLineDash([4, 3]);
@@ -789,7 +856,7 @@
 
       ctx.fillStyle = '#10b981';
       ctx.font = '10px sans-serif';
-      ctx.fillText('30.0 m CEP Tactical Limit', pad.left + 20, cepY - 5);
+      ctx.fillText(`${curTol.toFixed(1)} m CEP Threshold Boundary`, pad.left + 20, cepY - 5);
 
       batch.forEach((run) => {
         const md = Math.min(50, Math.max(0, run.max_dev || 0));
@@ -798,7 +865,7 @@
         const px = pad.left + (md / 50.0) * plotW;
         const py = pad.top + plotH - (fe / errMax) * plotH;
 
-        ctx.fillStyle = run.target_status === 'PASS' ? '#34d399' : '#f43f5e';
+        ctx.fillStyle = (fe <= curTol) ? '#34d399' : '#f43f5e';
         ctx.beginPath();
         ctx.arc(px, py, 2.5, 0, Math.PI * 2);
         ctx.fill();
@@ -820,16 +887,21 @@
     window.addEventListener('resize', window.drawAllGraphs);
 
     // ==========================================
-    // 4. FLIGHT PREDICTION CONTROLLER (ML MODEL)
+    // 4. FLIGHT PREDICTION CONTROLLER (ML MODEL + PHYSICS)
     // ==========================================
     window.updatePredictionUI = function() {
       const s = FlightStateManager.getState();
       const v0 = parseFloat(s.v0) || 800.0;
       const th = parseFloat(s.theta0) || 45.0;
+      const mass = parseFloat(s.mass) || 12.0;
       const dp = parseFloat(s.xdeploy) || 0.0;
       const wm = parseFloat(s.wind) || 0.0;
       const wd = parseFloat(s.windDir !== undefined ? s.windDir : -80.0);
+      const targetX = parseFloat(s.targetX !== undefined ? s.targetX : 15000.0);
+      const targetZ = parseFloat(s.targetZ !== undefined ? s.targetZ : 0.0);
+      const targetTol = parseFloat(s.targetTol !== undefined ? s.targetTol : 30.0);
 
+      // Feature normalization for ML
       const v0_norm = (v0 - 800.0) / 100.0;
       const th_norm = (th - 45.0) / 5.0;
       const dp_norm = dp / 5000.0;
@@ -861,22 +933,43 @@
         ml_maxdev = feats.reduce((sum, f, i) => sum + f * (model.weights_maxdev[i] || 0), 0);
       }
 
-      if (ml_error < 0.25) ml_error = 0.25 + Math.abs(wm) * 0.12;
-      if (ml_duration < 15.0) ml_duration = 34.80;
-      if (ml_maxdev < 0.1) ml_maxdev = 0.89;
+      // Physics adjustment for mass (5 - 80 kg)
+      // Ballistic coefficient beta = mass / (Cd * S). Higher mass reduces drag deceleration!
+      const betaRef = 12.0 / (0.34 * 0.0081);
+      const betaActual = mass / (0.34 * 0.0081);
+      const massRatio = Math.sqrt(betaActual / betaRef);
 
       const thetaRad = (th * Math.PI) / 180.0;
       const v0z = v0 * Math.sin(thetaRad);
       const v0x = v0 * Math.cos(thetaRad);
       const g = 9.80665;
-      const mass = parseFloat(s.mass) || 12.0;
-      const beta = mass / (0.34 * 0.0081);
-      const dragLoss = Math.min(0.35, 120.0 / beta);
-
+      
+      const dragLoss = Math.max(0.1, Math.min(0.4, 120.0 / betaActual));
       const apogee = ((v0z * v0z) / (2 * g)) * (1.0 - dragLoss * 0.5);
-      const range = (v0x * ml_duration) * (1.0 - dragLoss * 0.65);
+      
+      // Calculate flight range considering target elevation (targetZ)
+      // Range with ground elevation offset:
+      const tofApprox = (v0z + Math.sqrt(Math.max(1.0, v0z*v0z - 2*g*targetZ))) / g * (1.0 - dragLoss * 0.3);
+      const actualRange = (v0x * tofApprox) * (1.0 - dragLoss * 0.65);
 
-      const isSuccess = ml_error <= 30.0;
+      // Distance offset between physical impact range and desired targetX:
+      const rangeError = Math.abs(actualRange - targetX);
+      
+      // Guided correction factor: if guidance is active and within reachable range, fins correct error
+      let totalMissDistance = ml_error;
+      if (rangeError > 2000.0) {
+        // Target is beyond the aerodynamic control authority of the vehicle
+        totalMissDistance += (rangeError - 2000.0) * 0.75;
+      } else {
+        totalMissDistance = Math.max(0.45, ml_error * (0.8 + (rangeError / 2000.0) * 0.4));
+      }
+
+      // If target is higher than apogee, cannot reach!
+      if (targetZ > apogee - 200) {
+        totalMissDistance += Math.abs(targetZ - apogee) * 2.0;
+      }
+
+      const isSuccess = totalMissDistance <= targetTol;
 
       const predCep = document.getElementById('pred_cep');
       const predApogee = document.getElementById('pred_apogee');
@@ -888,10 +981,10 @@
       const verdictDesc = document.getElementById('verdictDesc');
       const verdictBadge = document.getElementById('verdictBadge');
 
-      if (predCep) predCep.textContent = `${ml_error.toFixed(2)} m`;
+      if (predCep) predCep.textContent = `${totalMissDistance.toFixed(2)} m`;
       if (predApogee) predApogee.textContent = `${apogee.toFixed(1)} m`;
-      if (predRange) predRange.textContent = `${range.toFixed(1)} m`;
-      if (predTof) predTof.textContent = `${ml_duration.toFixed(2)} s`;
+      if (predRange) predRange.textContent = `${actualRange.toFixed(1)} m (Target: ${targetX.toFixed(0)}m)`;
+      if (predTof) predTof.textContent = `${tofApprox.toFixed(2)} s`;
 
       if (verdictCard) {
         verdictCard.style.borderLeft = isSuccess ? '6px solid #10b981' : '6px solid #f43f5e';
@@ -900,27 +993,26 @@
 
       if (verdictTitle) {
         verdictTitle.textContent = isSuccess
-          ? 'TARGET HIT (PASS) · PRECISION ACCURACY'
-          : 'OUTSIDE TARGET CEP (FAIL) · EXCESSIVE DISPERSION';
+          ? `TARGET HIT (PASS) · ${(targetX/1000).toFixed(1)}km TARGET ACQUIRED`
+          : `TARGET MISSED (FAIL) · OUTSIDE ${targetTol.toFixed(0)}m CEP LIMIT`;
         verdictTitle.style.color = isSuccess ? '#f8fafc' : '#fecdd3';
       }
 
       if (verdictBadge) {
         verdictBadge.className = isSuccess ? 'factor-badge badge-emerald' : 'factor-badge badge-rose';
-        verdictBadge.textContent = isSuccess ? '100% MISSION SUCCESS (PASS)' : 'TARGET MISSED (> 30m CEP)';
+        verdictBadge.textContent = isSuccess ? '100% MISSION SUCCESS (PASS)' : `CEP EXCEEDED (${totalMissDistance.toFixed(1)}m > ${targetTol.toFixed(0)}m)`;
       }
 
       if (verdictDesc) {
         verdictDesc.textContent = isSuccess
-          ? `Trained Machine Learning Surrogate (Polynomial Ridge Regression, R² = ${model ? model.r2_error : 0.58}) predicts precision hit with final error ${ml_error.toFixed(2)} m, well inside the tactical threshold of 30.0 m.`
-          : `Machine Learning Prediction indicates high dispersion error of ${ml_error.toFixed(2)} m (exceeding 30.0 m limit). Fin deployment distance (${dp.toLocaleString()} m) or crosswind (${wm} m/s) prevented complete terminal guidance convergence.`;
+          ? `Physics & Trained ML Model confirm projectile (Mass: ${mass.toFixed(1)}kg, Ballistic β: ${betaActual.toFixed(0)} kg/m²) strikes target (${(targetX/1000).toFixed(1)} km downrange, ${targetZ.toFixed(0)} m elevation) with precision miss distance of ${totalMissDistance.toFixed(2)} m, inside tolerance.`
+          : `Target coordinates (${(targetX/1000).toFixed(1)} km, ${targetZ.toFixed(0)} m) or crosswind (${wm.toFixed(1)} m/s) exceed guidance trim capacity for current mass (${mass.toFixed(1)}kg) and velocity (${v0.toFixed(0)}m/s). Calculated error is ${totalMissDistance.toFixed(2)} m.`;
       }
 
-      // Update Nav Box 4 Badge
       const b4 = document.getElementById('badge-prediction');
       if (b4) {
         b4.className = isSuccess ? 'box-badge badge-emerald' : 'box-badge badge-rose';
-        b4.textContent = `${isSuccess ? 'PASS' : 'FAIL'} (${ml_error.toFixed(1)}m)`;
+        b4.textContent = `${isSuccess ? 'PASS' : 'FAIL'} (${totalMissDistance.toFixed(1)}m)`;
       }
     };
 
