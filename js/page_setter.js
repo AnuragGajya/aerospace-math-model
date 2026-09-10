@@ -106,13 +106,13 @@
     window.applyPreset = function(type) {
       let pState = {};
       if (type === 'nominal') {
-        pState = { v0: 1100, theta0: 36.3, mass: 12.0, xdeploy: 15000, wind: 0.0, pronav: 4.0 };
+        pState = { v0: 800, theta0: 45.0, mass: 12.0, targetX: 15000, targetZ: 0, targetTol: 30, xdeploy: 800, wind: 4.5, windDir: -80.0, pronav: 4.0 };
       } else if (type === 'steep') {
-        pState = { v0: 1200, theta0: 48.0, mass: 12.0, xdeploy: 12000, wind: 2.0, pronav: 4.2 };
-      } else if (type === 'earlyDeploy') {
-        pState = { v0: 1050, theta0: 34.0, mass: 12.0, xdeploy: 8000, wind: 0.0, pronav: 4.0 };
+        pState = { v0: 960, theta0: 52.0, mass: 24.0, targetX: 18500, targetZ: 350, targetTol: 30, xdeploy: 800, wind: 4.0, windDir: -80.0, pronav: 4.2 };
+      } else if (type === 'heavyLongRange') {
+        pState = { v0: 1050, theta0: 42.0, mass: 65.0, targetX: 25500, targetZ: 100, targetTol: 30, xdeploy: 1000, wind: 3.5, windDir: -80.0, pronav: 4.5 };
       } else if (type === 'crosswind') {
-        pState = { v0: 1100, theta0: 36.3, mass: 12.0, xdeploy: 15000, wind: 15.0, pronav: 4.5 };
+        pState = { v0: 920, theta0: 45.0, mass: 35.0, targetX: 19000, targetZ: 0, targetTol: 30, xdeploy: 400, wind: 12.0, windDir: 90.0, pronav: 5.0 };
       }
       mgr.saveState(pState);
       updateUI(pState);

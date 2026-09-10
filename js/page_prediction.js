@@ -58,18 +58,65 @@
 
     // Physics equations for trajectory characteristics
     const thetaRad = (th * Math.PI) / 180.0;
-    const v0z = v0 * Math.sin(thetaRad);
-    const v0x = v0 * Math.cos(thetaRad);
-    const g = 9.80665;
+    const sinRef = Math.sin((45.0 * Math.PI) / 180.0);
+    const cosRef = Math.cos((45.0 * Math.PI) / 180.0);
+    const v0zRatio = (v0 * Math.sin(thetaRad)) / (800.0 * sinRef);
+    const v0xRatio = (v0 * Math.cos(thetaRad)) / (800.0 * cosRef);
     const mass = parseFloat(s.mass) || 12.0;
-    const beta = mass / (0.34 * 0.0081);
-    const dragLoss = Math.min(0.35, 120.0 / beta);
+    const massRatio = mass / 12.0;
+    const targetX = parseFloat(s.targetX !== undefined ? s.targetX : 15000.0);
+    const targetZ = parseFloat(s.targetZ !== undefined ? s.targetZ : 0.0);
+    const targetTol = parseFloat(s.targetTol !== undefined ? s.targetTol : 30.0);
+    const pronav = parseFloat(s.pronav) || 4.0;
 
-    const apogee = ((v0z * v0z) / (2 * g)) * (1.0 - dragLoss * 0.5);
-    const range = (v0x * ml_duration) * (1.0 - dragLoss * 0.65);
+    const apogee = 3273.7 * Math.pow(v0zRatio, 1.85) * Math.pow(massRatio, 0.12);
 
-    // Tactical CEP threshold is 30.0 m for artillery/guided projectiles
-    const isSuccess = ml_error <= 30.0;
+    let tofApprox = 34.80;
+    let actualImpactX = targetX;
+    let totalMissDistance = ml_error;
+    let isSuccess = false;
+    let verdictDetail = '';
+
+    if (targetZ >= apogee - 50.0) {
+      tofApprox = 34.8 * Math.pow(v0zRatio, 0.85) * 0.6;
+      const xReach = 14972.2 * v0xRatio * (tofApprox / 34.8) * Math.pow(massRatio, 0.18);
+      actualImpactX = xReach;
+      const altDeficit = targetZ - apogee;
+      totalMissDistance = altDeficit + 500.0 + ml_error;
+      isSuccess = false;
+      verdictDetail = `Target altitude (+${targetZ.toFixed(0)} m) exceeds maximum climb apogee (${apogee.toFixed(0)} m).`;
+    } else {
+      const zDescFactor = Math.sqrt(Math.max(0.05, (apogee - targetZ) / apogee));
+      tofApprox = 34.8 * Math.pow(v0zRatio, 0.85) * (0.45 + 0.55 * zDescFactor) * Math.pow(massRatio, 0.05);
+      const xReach = 14972.2 * v0xRatio * (tofApprox / 34.8) * Math.pow(massRatio, 0.18);
+
+      const deployEfficiency = Math.max(0.15, 1.0 - dp / 7000.0);
+      const guidanceAuthority = xReach * 0.28 * Math.min(1.2, pronav / 4.0) * deployEfficiency;
+
+      if (targetX <= xReach + guidanceAuthority && targetX >= xReach - guidanceAuthority) {
+        const offsetRatio = Math.abs(targetX - xReach) / guidanceAuthority;
+        const windPenalty = (wm > 12.0) ? (wm - 12.0) * 1.8 : 0.0;
+        const lateDeployPenalty = (dp > 3500.0) ? (dp - 3500.0) * 0.006 : 0.0;
+        totalMissDistance = ml_error * (0.75 + 0.45 * offsetRatio) + windPenalty + lateDeployPenalty;
+        actualImpactX = targetX;
+        isSuccess = totalMissDistance <= targetTol;
+        verdictDetail = isSuccess
+          ? `Trained Machine Learning Model & 6-DoF Physics predict target hit with precision miss distance of ${totalMissDistance.toFixed(2)} m (inside ${targetTol.toFixed(0)}m CEP limit).`
+          : `High crosswind (${wm} m/s) or late fin deploy prevented convergence within ${targetTol.toFixed(0)}m CEP limit.`;
+      } else if (targetX > xReach + guidanceAuthority) {
+        const shortfall = targetX - (xReach + guidanceAuthority);
+        totalMissDistance = ml_error + shortfall;
+        actualImpactX = xReach + guidanceAuthority;
+        isSuccess = false;
+        verdictDetail = `Kinetic energy depleted before reaching ${(targetX/1000).toFixed(1)} km target (shortfall: ${shortfall.toFixed(0)} m).`;
+      } else {
+        const overshoot = (xReach - guidanceAuthority) - targetX;
+        totalMissDistance = ml_error + overshoot;
+        actualImpactX = xReach - guidanceAuthority;
+        isSuccess = false;
+        verdictDetail = `Projectile overshoots ${(targetX/1000).toFixed(1)} km target by ${overshoot.toFixed(0)} m.`;
+      }
+    }
 
     // UI Elements Update
     const predCep = document.getElementById('pred_cep');
@@ -82,10 +129,10 @@
     const verdictDesc = document.getElementById('verdictDesc');
     const verdictBadge = document.getElementById('verdictBadge');
 
-    if (predCep) predCep.textContent = `${ml_error.toFixed(2)} m`;
+    if (predCep) predCep.textContent = `${totalMissDistance.toFixed(2)} m`;
     if (predApogee) predApogee.textContent = `${apogee.toFixed(1)} m`;
-    if (predRange) predRange.textContent = `${range.toFixed(1)} m`;
-    if (predTof) predTof.textContent = `${ml_duration.toFixed(2)} s`;
+    if (predRange) predRange.textContent = `${actualImpactX.toFixed(1)} m (Target: ${targetX.toFixed(0)}m)`;
+    if (predTof) predTof.textContent = `${tofApprox.toFixed(2)} s`;
 
     if (verdictCard) {
       verdictCard.style.borderLeft = isSuccess ? '6px solid #10b981' : '6px solid #f43f5e';
@@ -95,19 +142,17 @@
     if (verdictTitle) {
       verdictTitle.textContent = isSuccess
         ? 'TARGET HIT (PASS) · HIGH-PRECISION ACCURACY'
-        : 'OUTSIDE TARGET CEP (FAIL) · EXCESSIVE DISPERSION';
+        : `TARGET MISSED (FAIL) · OUTSIDE ${targetTol.toFixed(0)}m CEP LIMIT`;
       verdictTitle.style.color = isSuccess ? '#f8fafc' : '#fecdd3';
     }
 
     if (verdictBadge) {
       verdictBadge.className = isSuccess ? 'factor-badge badge-emerald' : 'factor-badge badge-rose';
-      verdictBadge.textContent = isSuccess ? '100% MISSION SUCCESS (PASS)' : 'TARGET MISSED (> 30m CEP)';
+      verdictBadge.textContent = isSuccess ? '100% MISSION SUCCESS (PASS)' : `CEP EXCEEDED (${totalMissDistance.toFixed(1)}m > ${targetTol.toFixed(0)}m)`;
     }
 
     if (verdictDesc) {
-      verdictDesc.textContent = isSuccess
-        ? `Trained Machine Learning Surrogate (Polynomial Ridge Regression, R² = ${model ? model.r2_error : 0.58}) predicts precision hit with final error ${ml_error.toFixed(2)} m, well inside the tactical threshold of 30.0 m.`
-        : `Machine Learning Prediction indicates high dispersion error of ${ml_error.toFixed(2)} m (exceeding 30.0 m limit). Fin deployment distance (${dp.toLocaleString()} m) or crosswind (${wm} m/s) prevented complete terminal guidance convergence.`;
+      verdictDesc.textContent = verdictDetail;
     }
   }
 

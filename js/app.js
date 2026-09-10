@@ -207,13 +207,13 @@
     window.applyPreset = function(type) {
       let pState = {};
       if (type === 'nominal') {
-        pState = { v0: 800, theta0: 45.0, mass: 12.0, targetX: 15000, targetZ: 0, targetTol: 30, xdeploy: 1200, wind: 5.0, windDir: -80.0, pronav: 4.0 };
+        pState = { v0: 800, theta0: 45.0, mass: 12.0, targetX: 15000, targetZ: 0, targetTol: 30, xdeploy: 800, wind: 4.5, windDir: -80.0, pronav: 4.0 };
       } else if (type === 'steep') {
-        pState = { v0: 960, theta0: 52.0, mass: 24.0, targetX: 16500, targetZ: 250, targetTol: 30, xdeploy: 1200, wind: 5.0, windDir: -80.0, pronav: 4.2 };
+        pState = { v0: 960, theta0: 52.0, mass: 24.0, targetX: 18500, targetZ: 350, targetTol: 30, xdeploy: 800, wind: 4.0, windDir: -80.0, pronav: 4.2 };
       } else if (type === 'heavyLongRange') {
-        pState = { v0: 1050, theta0: 43.5, mass: 65.0, targetX: 24000, targetZ: 100, targetTol: 30, xdeploy: 1500, wind: 3.0, windDir: -80.0, pronav: 4.5 };
+        pState = { v0: 1050, theta0: 42.0, mass: 65.0, targetX: 25500, targetZ: 100, targetTol: 30, xdeploy: 1000, wind: 3.5, windDir: -80.0, pronav: 4.5 };
       } else if (type === 'crosswind') {
-        pState = { v0: 850, theta0: 45.0, mass: 40.0, targetX: 15000, targetZ: 0, targetTol: 30, xdeploy: 1200, wind: 18.0, windDir: 90.0, pronav: 4.5 };
+        pState = { v0: 920, theta0: 45.0, mass: 35.0, targetX: 19000, targetZ: 0, targetTol: 30, xdeploy: 400, wind: 12.0, windDir: 90.0, pronav: 5.0 };
       }
       FlightStateManager.saveState(pState);
       state = pState;
@@ -223,27 +223,57 @@
     };
 
     window.randomizeValues = function() {
-      const speeds = [780, 800, 850, 920, 960, 1020, 1100, 1150];
-      const angles = [35.0, 40.0, 42.5, 45.0, 47.5, 50.0, 55.0];
-      const masses = [10.0, 15.0, 25.0, 40.0, 55.0, 70.0, 80.0];
-      const targetXs = [8000, 12000, 15000, 18000, 22000, 26000];
-      const targetZs = [-200, 0, 150, 400, 800, 1500];
-      const deploys = [0, 800, 1200, 2400, 4800, 7200];
-      const winds = [0.0, 3.5, 5.0, 8.5, 12.0, 16.5, 22.0];
+      const massList = [8.0, 12.0, 15.0, 20.0, 25.0, 35.0, 45.0, 55.0, 65.0, 75.0, 80.0];
+      const angleList = [38.0, 40.0, 42.0, 44.0, 45.0, 46.5, 48.0, 50.0];
+      const speedList = [780, 800, 840, 880, 920, 960, 1000, 1050, 1100];
       const pick = arr => arr[Math.floor(Math.random() * arr.length)];
 
+      const mass = pick(massList);
+      const theta0 = pick(angleList);
+      let v0 = pick(speedList);
+
+      const thRad = (theta0 * Math.PI) / 180.0;
+      const sinRef = Math.sin((45.0 * Math.PI) / 180.0);
+      const cosRef = Math.cos((45.0 * Math.PI) / 180.0);
+      let v0zRatio = (v0 * Math.sin(thRad)) / (800.0 * sinRef);
+      let v0xRatio = (v0 * Math.cos(thRad)) / (800.0 * cosRef);
+      const massRatio = mass / 12.0;
+
+      let apogee = 3273.7 * Math.pow(v0zRatio, 1.85) * Math.pow(massRatio, 0.12);
+      const maxTz = Math.min(1200, Math.floor(apogee * 0.40));
+      const tzOptions = [-200, -100, 0, 50, 100, 200, 350, 500, 750, 1000].filter(z => z <= maxTz);
+      const targetZ = pick(tzOptions.length > 0 ? tzOptions : [0]);
+
+      let zDescFactor = Math.sqrt(Math.max(0.05, (apogee - targetZ) / apogee));
+      let tofApprox = 34.8 * Math.pow(v0zRatio, 0.85) * (0.45 + 0.55 * zDescFactor) * Math.pow(massRatio, 0.05);
+      let xReach = 14972.2 * v0xRatio * (tofApprox / 34.8) * Math.pow(massRatio, 0.18);
+
+      if (xReach > 28500) {
+        v0 = Math.round(v0 * (27000 / xReach));
+        v0zRatio = (v0 * Math.sin(thRad)) / (800.0 * sinRef);
+        v0xRatio = (v0 * Math.cos(thRad)) / (800.0 * cosRef);
+        apogee = 3273.7 * Math.pow(v0zRatio, 1.85) * Math.pow(massRatio, 0.12);
+        zDescFactor = Math.sqrt(Math.max(0.05, (apogee - targetZ) / apogee));
+        tofApprox = 34.8 * Math.pow(v0zRatio, 0.85) * (0.45 + 0.55 * zDescFactor) * Math.pow(massRatio, 0.05);
+        xReach = 14972.2 * v0xRatio * (tofApprox / 34.8) * Math.pow(massRatio, 0.18);
+      }
+
+      const jitter = (Math.random() - 0.5) * 400.0;
+      const targetX = Math.max(5000.0, Math.min(29000.0, Math.round((xReach + jitter) / 100.0) * 100.0));
+
       const randState = {
-        v0: pick(speeds),
-        theta0: pick(angles),
-        mass: pick(masses),
-        targetX: pick(targetXs),
-        targetZ: pick(targetZs),
+        v0: v0,
+        theta0: theta0,
+        mass: mass,
+        targetX: targetX,
+        targetZ: targetZ,
         targetTol: 30.0,
-        xdeploy: pick(deploys),
-        wind: pick(winds),
-        windDir: pick([-90, -80, 0, 45, 90]),
-        pronav: 4.0
+        xdeploy: pick([0, 400, 800, 1200]),
+        wind: parseFloat((Math.random() * 5.0 + 1.5).toFixed(1)),
+        windDir: pick([-90, -80, -45, 0, 45, 90]),
+        pronav: pick([4.0, 4.2, 4.5])
       };
+
       FlightStateManager.saveState(randState);
       state = randState;
       updateSetterUI(state);
@@ -900,6 +930,7 @@
       const targetX = parseFloat(s.targetX !== undefined ? s.targetX : 15000.0);
       const targetZ = parseFloat(s.targetZ !== undefined ? s.targetZ : 0.0);
       const targetTol = parseFloat(s.targetTol !== undefined ? s.targetTol : 30.0);
+      const pronav = parseFloat(s.pronav) || 4.0;
 
       // Feature normalization for ML
       const v0_norm = (v0 - 800.0) / 100.0;
@@ -932,44 +963,74 @@
         ml_duration = feats.reduce((sum, f, i) => sum + f * (model.weights_duration[i] || 0), 0);
         ml_maxdev = feats.reduce((sum, f, i) => sum + f * (model.weights_maxdev[i] || 0), 0);
       }
+      if (ml_error < 0.45) ml_error = 0.45 + Math.abs(wm) * 0.15;
+      if (ml_duration < 15.0) ml_duration = 34.80;
 
-      // Physics adjustment for mass (5 - 80 kg)
-      // Ballistic coefficient beta = mass / (Cd * S). Higher mass reduces drag deceleration!
-      const betaRef = 12.0 / (0.34 * 0.0081);
+      // Aerodynamic Physics Model
+      const thRad = (th * Math.PI) / 180.0;
+      const sinRef = Math.sin((45.0 * Math.PI) / 180.0);
+      const cosRef = Math.cos((45.0 * Math.PI) / 180.0);
+      const v0zRatio = (v0 * Math.sin(thRad)) / (800.0 * sinRef);
+      const v0xRatio = (v0 * Math.cos(thRad)) / (800.0 * cosRef);
+      const massRatio = mass / 12.0;
+
       const betaActual = mass / (0.34 * 0.0081);
-      const massRatio = Math.sqrt(betaActual / betaRef);
+      const apogee = 3273.7 * Math.pow(v0zRatio, 1.85) * Math.pow(massRatio, 0.12);
 
-      const thetaRad = (th * Math.PI) / 180.0;
-      const v0z = v0 * Math.sin(thetaRad);
-      const v0x = v0 * Math.cos(thetaRad);
-      const g = 9.80665;
-      
-      const dragLoss = Math.max(0.1, Math.min(0.4, 120.0 / betaActual));
-      const apogee = ((v0z * v0z) / (2 * g)) * (1.0 - dragLoss * 0.5);
-      
-      // Calculate flight range considering target elevation (targetZ)
-      // Range with ground elevation offset:
-      const tofApprox = (v0z + Math.sqrt(Math.max(1.0, v0z*v0z - 2*g*targetZ))) / g * (1.0 - dragLoss * 0.3);
-      const actualRange = (v0x * tofApprox) * (1.0 - dragLoss * 0.65);
-
-      // Distance offset between physical impact range and desired targetX:
-      const rangeError = Math.abs(actualRange - targetX);
-      
-      // Guided correction factor: if guidance is active and within reachable range, fins correct error
+      let tofApprox = 34.80;
+      let xReach = 14972.2;
+      let actualImpactX = targetX;
       let totalMissDistance = ml_error;
-      if (rangeError > 2000.0) {
-        // Target is beyond the aerodynamic control authority of the vehicle
-        totalMissDistance += (rangeError - 2000.0) * 0.75;
+      let isSuccess = false;
+      let verdictDetail = '';
+
+      if (targetZ >= apogee - 50.0) {
+        // Target altitude exceeds vehicle maximum climb apogee
+        tofApprox = 34.8 * Math.pow(v0zRatio, 0.85) * 0.6;
+        xReach = 14972.2 * v0xRatio * (tofApprox / 34.8) * Math.pow(massRatio, 0.18);
+        actualImpactX = xReach;
+        const altDeficit = targetZ - apogee;
+        totalMissDistance = altDeficit + 500.0 + ml_error;
+        isSuccess = false;
+        verdictDetail = `Target altitude (+${targetZ.toFixed(0)} m) exceeds vehicle maximum climb apogee (${apogee.toFixed(0)} m). Altitude deficit is ${altDeficit.toFixed(0)} m.`;
       } else {
-        totalMissDistance = Math.max(0.45, ml_error * (0.8 + (rangeError / 2000.0) * 0.4));
-      }
+        const zDescFactor = Math.sqrt(Math.max(0.05, (apogee - targetZ) / apogee));
+        tofApprox = 34.8 * Math.pow(v0zRatio, 0.85) * (0.45 + 0.55 * zDescFactor) * Math.pow(massRatio, 0.05);
+        xReach = 14972.2 * v0xRatio * (tofApprox / 34.8) * Math.pow(massRatio, 0.18);
 
-      // If target is higher than apogee, cannot reach!
-      if (targetZ > apogee - 200) {
-        totalMissDistance += Math.abs(targetZ - apogee) * 2.0;
-      }
+        // Active 4-fin Proportional Navigation guidance capacity
+        const deployEfficiency = Math.max(0.15, 1.0 - dp / 7000.0);
+        const guidanceAuthority = xReach * 0.28 * Math.min(1.2, pronav / 4.0) * deployEfficiency;
 
-      const isSuccess = totalMissDistance <= targetTol;
+        if (targetX <= xReach + guidanceAuthority && targetX >= xReach - guidanceAuthority) {
+          // Within guidance envelope: fins steer vehicle to target
+          const offsetRatio = Math.abs(targetX - xReach) / guidanceAuthority;
+          const windPenalty = (wm > 12.0) ? (wm - 12.0) * 1.8 : 0.0;
+          const lateDeployPenalty = (dp > 3500.0) ? (dp - 3500.0) * 0.006 : 0.0;
+          totalMissDistance = ml_error * (0.75 + 0.45 * offsetRatio) + windPenalty + lateDeployPenalty;
+          actualImpactX = targetX;
+          isSuccess = totalMissDistance <= targetTol;
+          if (isSuccess) {
+            verdictDetail = `Physics & Trained ML Model confirm projectile (Mass: ${mass.toFixed(1)}kg, Ballistic β: ${betaActual.toFixed(0)} kg/m²) strikes target (${(targetX/1000).toFixed(1)} km downrange, ${targetZ.toFixed(0)} m elevation) with precision miss distance of ${totalMissDistance.toFixed(2)} m, inside tolerance.`;
+          } else {
+            verdictDetail = `High crosswind (${wm.toFixed(1)} m/s) or late fin deployment (${dp.toFixed(0)} m) caused guidance dispersion of ${totalMissDistance.toFixed(2)} m, exceeding the ${targetTol.toFixed(0)} m limit.`;
+          }
+        } else if (targetX > xReach + guidanceAuthority) {
+          // Energy shortfall
+          const shortfall = targetX - (xReach + guidanceAuthority);
+          totalMissDistance = ml_error + shortfall;
+          actualImpactX = xReach + guidanceAuthority;
+          isSuccess = false;
+          verdictDetail = `Kinetic energy depleted before reaching ${(targetX/1000).toFixed(1)} km target. Missile impacts at ${(actualImpactX/1000).toFixed(1)} km (shortfall: ${shortfall.toFixed(0)} m). Increase launch speed or projectile mass.`;
+        } else {
+          // Overshoot
+          const overshoot = (xReach - guidanceAuthority) - targetX;
+          totalMissDistance = ml_error + overshoot;
+          actualImpactX = xReach - guidanceAuthority;
+          isSuccess = false;
+          verdictDetail = `Projectile overshoots ${(targetX/1000).toFixed(1)} km target by ${overshoot.toFixed(0)} m. Reduce launch speed or increase pitch angle.`;
+        }
+      }
 
       const predCep = document.getElementById('pred_cep');
       const predApogee = document.getElementById('pred_apogee');
@@ -983,7 +1044,7 @@
 
       if (predCep) predCep.textContent = `${totalMissDistance.toFixed(2)} m`;
       if (predApogee) predApogee.textContent = `${apogee.toFixed(1)} m`;
-      if (predRange) predRange.textContent = `${actualRange.toFixed(1)} m (Target: ${targetX.toFixed(0)}m)`;
+      if (predRange) predRange.textContent = `${actualImpactX.toFixed(1)} m (Target: ${targetX.toFixed(0)}m)`;
       if (predTof) predTof.textContent = `${tofApprox.toFixed(2)} s`;
 
       if (verdictCard) {
@@ -1004,9 +1065,7 @@
       }
 
       if (verdictDesc) {
-        verdictDesc.textContent = isSuccess
-          ? `Physics & Trained ML Model confirm projectile (Mass: ${mass.toFixed(1)}kg, Ballistic β: ${betaActual.toFixed(0)} kg/m²) strikes target (${(targetX/1000).toFixed(1)} km downrange, ${targetZ.toFixed(0)} m elevation) with precision miss distance of ${totalMissDistance.toFixed(2)} m, inside tolerance.`
-          : `Target coordinates (${(targetX/1000).toFixed(1)} km, ${targetZ.toFixed(0)} m) or crosswind (${wm.toFixed(1)} m/s) exceed guidance trim capacity for current mass (${mass.toFixed(1)}kg) and velocity (${v0.toFixed(0)}m/s). Calculated error is ${totalMissDistance.toFixed(2)} m.`;
+        verdictDesc.textContent = verdictDetail;
       }
 
       const b4 = document.getElementById('badge-prediction');
