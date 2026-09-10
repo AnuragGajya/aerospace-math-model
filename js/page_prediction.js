@@ -85,33 +85,33 @@
     } else {
       const zDescFactor = Math.sqrt(Math.max(0.05, (apogee - targetZ) / apogee));
       tofApprox = 34.8 * Math.pow(v0zRatio, 0.85) * (0.45 + 0.55 * zDescFactor) * Math.pow(massRatio, 0.05);
-      const xReach = 14972.2 * v0xRatio * (tofApprox / 34.8) * Math.pow(massRatio, 0.18);
+      const baseReach = 14972.2 * v0xRatio * (tofApprox / 34.8) * Math.pow(massRatio, 0.18);
 
-      const deployEfficiency = Math.max(0.15, 1.0 - dp / 7000.0);
-      const guidanceAuthority = xReach * 0.32 * Math.min(1.2, pronav / 4.0) * deployEfficiency;
+      const maxReach = baseReach * (1.75 + 0.30 * Math.min(1.5, pronav / 4.0)) * Math.max(0.4, 1.0 - dp / 10000.0);
+      const minReach = Math.min(4000.0, baseReach * 0.25);
 
-      if (targetX <= xReach + guidanceAuthority && targetX >= xReach - guidanceAuthority) {
-        const offsetRatio = Math.abs(targetX - xReach) / guidanceAuthority;
-        const windPenalty = (wm > 15.0) ? (wm - 15.0) * 1.5 : 0.0;
-        const lateDeployPenalty = (dp > 4000.0) ? (dp - 4000.0) * 0.005 : 0.0;
-        totalMissDistance = Math.min(28.5, guidanceCep * (0.75 + 0.35 * offsetRatio) + windPenalty + lateDeployPenalty);
+      if (targetX >= minReach && targetX <= maxReach) {
+        const offsetFactor = Math.abs(targetX - baseReach) / Math.max(1000.0, maxReach - baseReach);
+        const windPenalty = (wm > 16.0) ? (wm - 16.0) * 1.5 : 0.0;
+        const lateDeployPenalty = (dp > 4500.0) ? (dp - 4500.0) * 0.005 : 0.0;
+        totalMissDistance = Math.min(26.0, guidanceCep * (0.65 + 0.45 * offsetFactor) + windPenalty + lateDeployPenalty);
         actualImpactX = targetX;
         isSuccess = totalMissDistance <= targetTol;
         verdictDetail = isSuccess
           ? `Trained Machine Learning Model & 6-DoF Physics predict target hit with precision miss distance of ${totalMissDistance.toFixed(2)} m (inside ${targetTol.toFixed(0)}m CEP limit).`
           : `High crosswind (${wm} m/s) or late fin deploy prevented convergence within ${targetTol.toFixed(0)}m CEP limit.`;
-      } else if (targetX > xReach + guidanceAuthority) {
-        const shortfall = targetX - (xReach + guidanceAuthority);
+      } else if (targetX > maxReach) {
+        const shortfall = targetX - maxReach;
         totalMissDistance = guidanceCep + shortfall;
-        actualImpactX = xReach + guidanceAuthority;
+        actualImpactX = maxReach;
         isSuccess = false;
         verdictDetail = `Kinetic energy depleted before reaching ${(targetX/1000).toFixed(1)} km target (shortfall: ${shortfall.toFixed(0)} m).`;
       } else {
-        const overshoot = (xReach - guidanceAuthority) - targetX;
+        const overshoot = minReach - targetX;
         totalMissDistance = guidanceCep + overshoot;
-        actualImpactX = xReach - guidanceAuthority;
+        actualImpactX = minReach;
         isSuccess = false;
-        verdictDetail = `Projectile overshoots ${(targetX/1000).toFixed(1)} km target by ${overshoot.toFixed(0)} m.`;
+        verdictDetail = `Target is placed inside minimum arming distance. Overshoot is ${overshoot.toFixed(0)} m.`;
       }
     }
 
